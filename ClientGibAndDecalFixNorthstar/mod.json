@@ -1,0 +1,34 @@
+{
+	"Name" : "Client-Side Gib and Decal Fix",
+	"Description" : "Add more blood and gibs into game",
+	"Version": "1.0.0",
+	"LoadPriority": 9,		// needs to overwrite titan framework and anonymous mode
+
+	"Scripts": [
+		{
+			"Path": "cl_gib_lifetime_update.gnut",
+			"RunOn": "CLIENT",
+            "ClientCallback": {
+                "After": "Cl_GibLifeTime_Update_Init"
+            }
+		}
+	],
+
+	"ConVars": [
+		{
+			"Name": "cl_gib_lifetime_constant",		// client-side cl_gib_lifetime isn't updated until we enter the game, needs this to keep it updated
+			"DefaultValue": "300"
+		},
+		{
+			"Name": "cl_mp_blood_spray",			// client-side cl_gib_lifetime isn't updated until we enter the game, needs this to keep it updated
+			"DefaultValue": "1"
+		}
+	],
+
+	"Dependencies":
+    {
+		"HAS_TITAN_FRAMEWORK": "Peepee.TitanFramework",
+      	"HAS_ANONYMOUS_MODE": "Anonymous Mode",
+		"HAS_SUPER_MIXED_GAME": "Super Mixed Game Client-Side"
+    }
+}

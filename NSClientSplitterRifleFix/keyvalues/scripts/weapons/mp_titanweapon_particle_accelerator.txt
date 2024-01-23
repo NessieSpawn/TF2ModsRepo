@@ -1,0 +1,59 @@
+WeaponData
+{
+	MP_BASE
+	{
+		// needs to remove basic energy cost for northstar client
+		// because they're gonna predict energy cost on every shot
+		// move into proto_particle_accelerator mod
+		"shared_energy_cost"							"0"
+	}
+
+	SP_BASE
+	{
+		// needs to remove basic energy cost for northstar client
+		// because they're gonna predict energy cost on every shot
+		// move into proto_particle_accelerator mod
+		"shared_energy_cost"							"0"
+	}
+
+	Mods
+	{
+		proto_particle_accelerator
+		{
+			// moving from mp_base to here, so northstar client won't predict that player is using energy on every shot
+			"shared_energy_cost"							"30"
+		}
+		proto_particle_accelerator_pas
+		{
+			// moving from mp_base to here, so northstar client won't predict that player is using energy on every shot
+			"shared_energy_cost"							"30"
+		}
+		sticky_rounds
+		{
+		}
+		burn_mod_titan_particle_accelerator
+		{
+		}
+		pas_ion_weapon_ads
+		{
+		}
+		fd_split_shot_cost
+		{
+			// change from constant value to multiplier, so it's not gonna increase basic energy cost to above 0
+			"shared_energy_cost"							"*0.666667" // ~20
+		}
+		fd_upgraded_proto_particle_accelerator
+		{
+			// moving from mp_base to here, so northstar client won't predict that player is using energy on every shot
+			"shared_energy_cost"							"30"
+		}
+		fd_upgraded_proto_particle_accelerator_pas
+		{
+			// moving from mp_base to here, so northstar client won't predict that player is using energy on every shot
+			"shared_energy_cost"							"30"
+		}
+		fd_balance
+		{
+		}
+	}
+}

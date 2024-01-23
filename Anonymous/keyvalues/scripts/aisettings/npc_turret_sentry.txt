@@ -1,0 +1,9 @@
+npc_turret_sentry
+{
+	// modified for anonymous mode
+	//ui_targetinfo					"ui/targetinfo_remote_turret" [$mp]
+	ui_targetinfo					"ui/targetinfo_reaper_bounty" [$mp]
+	//ui_targetinfo					"ui/targetinfo_titan_sp" [$mp]
+	ui_targetinfo					"" [$sp]
+	//ui_targetinfo_offset_z			12
+}

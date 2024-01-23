@@ -1,0 +1,6 @@
+WeaponData
+{
+	"OnWeaponActivate"							"OnWeaponActivate_PlayMeleeSound"
+
+	"melee_sound_attack_1p"						"Player_Melee_Backhand_1P"
+}

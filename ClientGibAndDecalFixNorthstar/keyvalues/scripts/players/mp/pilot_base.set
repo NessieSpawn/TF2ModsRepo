@@ -1,0 +1,34 @@
+
+"pilot_base"
+{
+	"global"
+	{
+		// try to remove default gib model, all handled by cl_player.gnut
+		// hopefully we can have better gib lifetime
+		// nope. those gibs comes from native func with constant lifetime
+		//gibModel0						"models/gibs/human_gibs.mdl"
+		//gibModel0						""
+
+		// here we use similar gib as mechanical entities does
+		// these gibs can't be assigned with different bodygroups, change to be handled by cl_player.gnut
+		//gibModel0				"models/gibs/human_gibs.mdl"
+		//gibModel1				"models/gibs/human_gibs.mdl"
+		//gibModel2				"models/gibs/human_gibs.mdl"
+		//gibModel3				"models/gibs/human_gibs.mdl"
+		//gibModel4				"models/gibs/human_gibs.mdl"
+		//gibAttachment0			"HEADFOCUS"
+		//GibAttachment0			"left_leg"
+		//GibAttachment1			"right_leg"
+		//GibAttachment2			"left_arm"
+		//GibAttachment3			"right_arm"
+		gibModel0						"" // still leaving one empty gib
+
+		gibSpeed				200
+		gibAngualarSpeed		30
+
+		// vanilla missing
+		gibFX							"death_pinkmist_LG" // needs controlpoint
+		// no need to add if we're playing attrition extended
+		//gibSound						"death_pinkmist"
+	}
+}

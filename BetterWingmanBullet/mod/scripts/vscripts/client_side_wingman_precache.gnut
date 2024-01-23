@@ -1,0 +1,6 @@
+global function WingmanBulletModelClientSidePrecache_Init
+
+void function WingmanBulletModelClientSidePrecache_Init()
+{
+    PrecacheModel( $"models/weapons/bullets/projectile_shotgun.mdl" )
+}

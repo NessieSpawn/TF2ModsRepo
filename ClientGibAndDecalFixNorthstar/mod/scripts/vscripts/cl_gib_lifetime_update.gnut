@@ -1,0 +1,18 @@
+global function Cl_GibLifeTime_Update_Init
+
+void function Cl_GibLifeTime_Update_Init()
+{
+    thread GibLifeTimeConVarUpdate_Threaded()
+}
+
+void function GibLifeTimeConVarUpdate_Threaded()
+{
+    WaitFrame()
+
+    while ( true )
+    {
+        if ( GetConVarFloat( "cl_gib_lifetime" ) != GetConVarFloat( "cl_gib_lifetime_constant" ) )
+            SetConVarFloat( "cl_gib_lifetime", GetConVarFloat( "cl_gib_lifetime_constant" ) )
+        WaitFrame()
+    }
+}

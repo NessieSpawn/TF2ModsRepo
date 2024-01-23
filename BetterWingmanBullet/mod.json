@@ -1,0 +1,17 @@
+{
+	"Name" : "Better Wingman Bullet Model",
+	"Description" : "Just in case you don't like that flashing out huge bullet model",
+	"Version": "1.0.0",
+	"LoadPriority": 2,
+
+	"Scripts": [
+		// initilize scripts
+		{
+			"Path": "client_side_wingman_precache.gnut",
+			"RunOn": "SERVER && MP",
+            "ServerCallback": {
+                "After": "WingmanBulletModelClientSidePrecache_Init"
+            }
+		}
+	]
+}

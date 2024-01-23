@@ -1,0 +1,7 @@
+npc_titan_vanguard
+{
+	// modified for anonymous mode
+	//ui_targetinfo			"ui/targetinfo_titan"       [$mp]
+	ui_targetinfo			"ui/targetinfo_megaturret_fw"	[$mp]
+	ui_targetinfo			"ui/targetinfo_titan_sp"    [$sp]
+}

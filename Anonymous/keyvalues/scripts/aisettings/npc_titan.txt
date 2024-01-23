@@ -1,0 +1,10 @@
+npc_titan
+{
+	// modified for anonymous mode
+	//ui_targetinfo			"ui/targetinfo_titan"       [$mp]
+	//ui_targetinfo			"ui/targetinfo_titan_sp"    [$sp]
+	//ui_targetinfo			"ui/targetinfo_reaper_bounty"	[$mp]
+	ui_targetinfo			"ui/targetinfo_megaturret_fw"	[$mp]
+	ui_targetinfo			"ui/targetinfo_titan_sp"    [$sp]
+	//ui_targetinfo_offset_z			160
+}

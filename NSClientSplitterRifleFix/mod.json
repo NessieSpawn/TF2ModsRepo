@@ -1,0 +1,6 @@
+{
+	"Name" : "Northstar Client Splitter Rifle Fix",
+	"Description" : "Try to avoid that every splitter rifle shot causes client to predict energy cost",
+	"Version": "1.0.0",
+	"LoadPriority": 2
+}

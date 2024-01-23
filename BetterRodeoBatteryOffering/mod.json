@@ -1,0 +1,6 @@
+{
+	"Name" : "Better Rodeo Battery Offering",
+	"Description" : "Have to be crouched before offering battery to teammate, make it easier to control",
+	"Version": "1.0.0",
+	"LoadPriority": 1
+}

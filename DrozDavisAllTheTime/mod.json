@@ -1,0 +1,16 @@
+{
+    "Name": "Droz & Davis Faction Leader All The Time",
+	"Description": "I kinda like that",
+	"LoadPriority": 2,
+	"Version": "1.0.0",
+
+	"Scripts": [
+		{
+			"Path": "/faction_override_last_resort.gnut",
+			"RunOn": "CLIENT && MP",
+			"ClientCallback": {
+				"After": "FactionLeaderOverride_TheLastResort_Init"
+			}
+		}
+	]
+}

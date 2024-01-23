@@ -1,0 +1,10 @@
+{
+    "Name": "Always Rare Titan Ejecting Dialogue",
+	"Description": "Maybe for fun? respawn really have many funny quotes",
+	"LoadPriority": 8,			// needs to overwrite titan framework
+	"Version": "1.0.0",
+
+	"Dependencies": {
+		"HAS_TITAN_FRAMEWORK": "Peepee.TitanFramework"
+	}
+}

@@ -1,0 +1,7 @@
+npc_pilot_elite
+{
+	// modified for anonymous mode
+	//ui_targetinfo					"ui/targetinfo_npc_basic" [$mp]
+	ui_targetinfo					"" [$mp]
+	ui_targetinfo					"ui/targetinfo_npc_basic" [$sp]
+}

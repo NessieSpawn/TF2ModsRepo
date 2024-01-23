@@ -1,0 +1,8 @@
+WeaponData
+{
+	// we only needs this for client predicted short period of time, that will be enough
+	// NOTES:
+	// 20mm model doesn't seem to suffer at low latency, or at least in northstar servers it's all good
+	// shotgun projectile model seems to be empty model
+	"projectilemodel" 								"models/weapons/bullets/projectile_shotgun.mdl"
+}

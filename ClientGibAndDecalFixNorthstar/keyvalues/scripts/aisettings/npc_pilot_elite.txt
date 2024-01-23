@@ -1,0 +1,7 @@
+npc_pilot_elite
+{
+	// vanilla missing
+	gibFX							"death_pinkmist_LG" // needs controlpoint
+	// no need to add if we're playing attrition extended
+	//gibSound						"death_pinkmist"
+}

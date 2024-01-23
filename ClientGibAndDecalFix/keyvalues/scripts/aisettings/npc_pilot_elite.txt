@@ -1,0 +1,6 @@
+npc_pilot_elite
+{
+	// vanilla missing
+	gibFX							"death_pinkmist_LG" // needs controlpoint
+	gibSound						"death_pinkmist"
+}

@@ -1,0 +1,96 @@
+global function FactionLeaderOverride_TheLastResort_Init
+
+struct
+{
+    entity droz = null
+	entity davis = null
+    int dropshipIntroAnimIndex = -1
+
+	array<string> drozDropshipAnims = [ "commander_DLC_flyin_Droz_finally", "commander_DLC_flyin_Droz_everytime", "commander_DLC_flyin_Droz_brother" ]
+	array<asset> drozDropshipProps = [ FD_MODEL_DROZ_TABLET_PROP, FD_MODEL_DROZ_TABLET_PROP, DATA_KNIFE_MODEL ] //Make sure this lines up in the same order as Droz's animations!
+	array< string > davisDropshipAnims = [ "commander_DLC_flyin_Davis_finally", "commander_DLC_flyin_Davis_everytime", "commander_DLC_flyin_Davis_brother" ]
+} file
+
+void function FactionLeaderOverride_TheLastResort_Init()
+{
+	if ( GameRules_GetGameMode() == FD ) // don't override fd settings
+		return
+	
+    SetUpFactionLeader()
+}
+
+void function SetUpFactionLeader()
+{
+    OverrideFactionLeaderStruct fdFactionLeaderStruct
+	fdFactionLeaderStruct.dialoguePrefix = "mcor_cmdr"
+	fdFactionLeaderStruct.factionName = "#FD_FACTION_NAME"
+	fdFactionLeaderStruct.factionLogo = $"rui/faction/faction_logo_last_resort"
+	fdFactionLeaderStruct.useWaveForm = false
+	fdFactionLeaderStruct.dropshipIntroOverride = FD_CustomDropshipIntro
+
+	SetOverrideFactionLeader( fdFactionLeaderStruct )
+}
+
+void function FD_CustomDropshipIntro( int shipEHandle, float dropshipSpawnTime )
+{
+	entity dropShip = GetEntityFromEncodedEHandle( shipEHandle )
+	entity localViewPlayer = GetLocalViewPlayer()
+
+	entity davis = CreatePropDynamic( FD_MODEL_DAVIS )
+	davis.SetParent( dropShip, "ORIGIN" )
+	davis.MarkAsNonMovingAttachment()
+	file.davis = davis
+
+	entity droz = CreatePropDynamic( FD_MODEL_DROZ )
+	droz.SetParent( dropShip, "ORIGIN" )
+	droz.MarkAsNonMovingAttachment()
+	droz.SetSkin( 2 ) //FD only skin; replaces "64" on helmet with new faction logo
+	file.droz = droz
+
+	Assert( file.davisDropshipAnims.len() == file.drozDropshipAnims.len() )
+
+	string davisAnim
+	string drozAnim
+	entity drozProp
+
+	int dropshipAnimIndex = file.dropshipIntroAnimIndex
+
+	if ( file.dropshipIntroAnimIndex == -1 )
+		dropshipAnimIndex = RandomInt( file.davisDropshipAnims.len() )
+
+	drozProp = CreatePropDynamic( file.drozDropshipProps[ dropshipAnimIndex ] )
+	drozProp.MarkAsNonMovingAttachment()
+	drozProp.SetParent( droz, "R_HAND" )
+	davisAnim = file.davisDropshipAnims[ dropshipAnimIndex ]
+	drozAnim = file.drozDropshipAnims[ dropshipAnimIndex ]
+
+	thread PlayAnim( davis, davisAnim, dropShip, "ORIGIN" )
+	thread PlayAnim( droz, drozAnim, dropShip, "ORIGIN" )
+
+	droz.Anim_SetStartTime( dropshipSpawnTime )
+	droz.LerpSkyScale( 0.9, 0.1 )
+	SetTeam( droz, localViewPlayer.GetTeam() )
+
+	davis.Anim_SetStartTime( dropshipSpawnTime )
+	davis.LerpSkyScale( 0.9, 0.1 )
+	SetTeam( davis, localViewPlayer.GetTeam() )
+
+	dropShip.EndSignal( "OnDestroy" )
+
+	OnThreadEnd(
+	function() : ( davis, droz, drozProp )
+		{
+			if ( IsValid( davis ) )
+				davis.Destroy()
+
+			if ( IsValid( droz ) )
+				droz.Destroy()
+
+			if ( IsValid( drozProp ) )
+				drozProp.Destroy()
+		}
+	)
+
+	WaitForever()
+	//printt( "animation name: " + factionLeaderInfo.dropshipAnimName + ", initialTime: " + initialTime + ", propAttachment: " + factionLeaderInfo.propAttachment )
+}

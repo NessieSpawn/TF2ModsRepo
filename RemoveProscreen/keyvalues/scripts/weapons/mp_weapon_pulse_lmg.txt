@@ -1,0 +1,37 @@
+WeaponData
+{
+	Mods
+	{
+		slammer
+		{
+		}
+   		jump_kit
+        {
+        }
+        pro_screen
+        {
+			"ui8_enable"		"0"
+        }
+        extended_ammo
+		{
+		}
+		pas_fast_ads
+		{
+		}
+		pas_fast_swap
+		{
+		}
+		burn_mod_pulse_lmg
+		{
+		}
+		tactical_cdr_on_kill
+		{
+		}
+		pas_run_and_gun
+		{
+		}
+		pas_fast_reload
+		{
+		}
+	}
+}

@@ -1,0 +1,31 @@
+npc_prowler
+{
+	// try to remove default gib model, all handled by cl_player.gnut
+	// hopefully we can have better gib lifetime
+	// nope. those gibs comes from native func with constant lifetime
+	//GibModel0						"models/gibs/human_gibs.mdl"
+	//GibModel0						""
+
+	// here we use similar gib as mechanical entities does
+	// these gibs can't be assigned with different bodygroups, change to be handled by cl_player.gnut
+	//gibModel0				"models/gibs/human_gibs.mdl"
+	//gibModel1				"models/gibs/human_gibs.mdl"
+	//gibModel2				"models/gibs/human_gibs.mdl"
+	//gibModel3				"models/gibs/human_gibs.mdl"
+	//gibModel4				"models/gibs/human_gibs.mdl"
+	//gibModel5				"models/gibs/human_gibs.mdl"
+	//gibAttachment0			"HEADFOCUS"
+	//gibAttachment1			"CHESTFOCUS"
+	//gibAttachment2			"L_HAND"
+	//gibAttachment3			"R_HAND"
+	//gibAttachment4			"foot_L_sole"
+	//gibAttachment5			"foot_R_sole"
+	gibModel0						"" // still leaving one empty gib
+
+	gibSpeed				200
+	gibAngualarSpeed		30
+
+	// vanilla missing
+	gibFX							"death_pinkmist_LG" // needs controlpoint
+	gibSound						"death_pinkmist"
+}

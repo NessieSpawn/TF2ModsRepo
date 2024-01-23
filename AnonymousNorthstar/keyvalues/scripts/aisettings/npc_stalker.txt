@@ -1,0 +1,8 @@
+npc_stalker
+{
+	// modified for anonymous mode
+	//ui_targetinfo					"ui/targetinfo_stalker_bounty" [$mp]
+	ui_targetinfo					"" [$mp]
+	ui_targetinfo					"ui/targetinfo_npc_hackable" [$sp]
+	//ui_targetinfo_offset_z			12
+}

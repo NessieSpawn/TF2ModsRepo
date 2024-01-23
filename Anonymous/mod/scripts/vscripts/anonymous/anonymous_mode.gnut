@@ -1,0 +1,86 @@
+untyped // for us using player.entindex()
+
+global function AnonymousMode_Init
+global function GetPlayerAnonymousName
+global function GetNameMatchingAnonymousName
+
+global const string ANONYMOUS_DEFAULT_NAME = "Player"
+
+struct
+{
+    int anonymousIndex = 1
+    table<string, string> playerNamesTable
+} file
+
+void function AnonymousMode_Init()
+{
+    #if CLIENT
+        if ( IsLobby() ) // no updates in lobby
+            return
+        thread AnonymousMode_Client_Threaded()
+    #endif
+}
+
+string function GetPlayerAnonymousName( entity player )
+{
+    #if UI
+        string orgName = GetPlayerName()
+    #else
+        string orgName = player.GetPlayerName()
+    #endif
+    
+    return GetNameMatchingAnonymousName( orgName )
+}
+
+bool function TryInitAnonymousName( string orgName )
+{
+    if ( !( orgName in file.playerNamesTable ) )
+    {
+        int index = file.anonymousIndex
+        string anonymousString = index < 10 ? "0" + string( index ) : string( index )
+        file.playerNamesTable[ orgName ] <- ANONYMOUS_DEFAULT_NAME + anonymousString
+        file.anonymousIndex++
+        return true
+    }
+
+    return false
+}
+
+string function GetNameMatchingAnonymousName( string name )
+{
+    TryInitAnonymousName( name )
+
+    return file.playerNamesTable[ name ]
+}
+
+#if CLIENT
+void function AnonymousMode_Client_Threaded()
+{
+    // wait for game RUI starts updating
+    WaitFrame()
+
+    SetScoreboardUpdateCallback( OnScoreboardUpdate )
+    AddCallback_OnReceivedSayTextMessage( OnReceivedSayTextMessage ) // northstar custom chathook
+}
+
+// replace player name in scoreboard
+void function OnScoreboardUpdate( entity ent, var rui )
+{
+    // player ent update
+    if ( ent.IsPlayer() )
+    {
+        RuiSetString( rui, "playerName", GetPlayerAnonymousName( ent ) )
+        RuiSetImage( rui, "playerCard", $"rui/gencard_icons/gc_icon_blank" )
+    }
+}
+
+// replace player name in chat
+ClClient_MessageStruct function OnReceivedSayTextMessage(ClClient_MessageStruct message)
+{
+    if ( !message.player.IsPlayer() )
+        return message
+    
+    message.playerName = GetPlayerAnonymousName( message.player )
+    return message
+}
+#endif

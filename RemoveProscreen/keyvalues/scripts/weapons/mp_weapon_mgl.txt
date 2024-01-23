@@ -1,0 +1,37 @@
+WeaponData
+{
+	Mods
+	{
+		extended_ammo
+		{
+		}
+		pro_screen
+		{
+			"ui8_enable"		"0"
+		}
+		pas_fast_reload
+		{
+		}
+		burn_mod_mgl
+		{
+		}
+		ar_trajectory
+		{
+		}
+		pas_fast_ads
+		{
+		}
+		pas_fast_swap
+		{
+		}
+		tactical_cdr_on_kill
+		{
+		}
+		pas_run_and_gun
+		{
+		}
+		at_unlimited_ammo
+        {
+        }
+	}
+}
