@@ -983,8 +983,10 @@ void function KillShotBloodSpray( entity player, entity victim, vector damagePos
 		return
 
 	// remove human checks, so it works for npc pilots
+	// add back somehow... there're some other things like props can be damaged
 	//if ( !victim.IsHuman() && !IsProwler( victim ) )
-	//	return
+	if ( !victim.IsHuman() && !IsPilotElite( victim ) && !IsProwler( victim ) )
+		return
 
 	if ( victim.IsMechanical() )
 		return
@@ -1008,8 +1010,10 @@ void function BloodSprayDecals( entity player, entity victim, vector damagePosit
 		return
 
 	// remove human checks, so it works for npc pilots
+	// add back somehow... there're some other things like props can be damaged
 	//if ( !victim.IsHuman() && !IsProwler( victim ) )
-	//	return
+	if ( !victim.IsHuman() && !IsPilotElite( victim ) && !IsProwler( victim ) )
+		return
 
 	if ( victim.IsMechanical() )
 		return
@@ -1051,7 +1055,9 @@ void function BloodSprayDecals_Think( entity player, entity victim, vector damag
 	{
 		// for explosion/melee damage, use chest instead of actual damage position
 		int attachID = victim.LookupAttachment( "CHESTFOCUS" )
-		traceStart = victim.GetAttachmentOrigin( attachID )
+		// anti-crash
+		if ( attachID > 0 )
+			traceStart = victim.GetAttachmentOrigin( attachID )
 
 		if ( isExplosion )
 			traceFwd = AnglesToForward( victim.GetAngles() ) * -1
