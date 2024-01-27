@@ -1,0 +1,49 @@
+WeaponData
+{
+	Mods
+	{
+		slammer
+		{
+		}
+  		pro_screen
+        {
+			"ui8_enable"		"0"
+        }
+        extended_ammo
+		{
+		}
+		burn_mod_defender
+		{
+		}
+		quick_charge
+		{
+		}
+		PROTO_at_turret
+		{
+		}
+		pas_fast_ads
+		{
+		}
+		pas_fast_swap
+		{
+		}
+		tactical_cdr_on_kill
+		{
+		}
+		pas_run_and_gun
+		{
+		}
+		pas_fast_reload
+		{
+		}
+		pveBase
+		{
+		}
+		at_unlimited_ammo
+		{
+		}
+		longNPCCharge
+		{
+		}
+	}
+}

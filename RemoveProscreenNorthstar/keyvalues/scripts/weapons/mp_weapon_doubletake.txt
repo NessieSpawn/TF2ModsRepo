@@ -1,0 +1,43 @@
+WeaponData
+{
+	Mods
+	{
+		iron_sights
+		{
+		}
+		scope_4x
+		{
+		}
+		pro_screen
+		{
+			"ui8_enable"		"0"
+		}
+		tactical_cdr_on_kill
+		{
+		}
+		extended_ammo
+		{
+		}
+		stabilizer
+		{
+		}
+		ricochet
+		{
+		}
+        slammer
+        {
+        }
+		pas_fast_reload
+		{
+		}
+		pas_fast_ads
+		{
+		}
+		pas_fast_swap
+		{
+		}
+		burn_mod_doubletake
+		{
+		}
+	}
+}

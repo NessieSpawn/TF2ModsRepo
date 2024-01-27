@@ -1,0 +1,46 @@
+WeaponData
+{
+	Mods
+	{
+		iron_sights
+		{
+		}
+		hcog
+		{
+		}
+		redline_sight
+		{
+		}
+		threat_scope
+		{
+		}
+		extended_ammo
+		{
+		}
+		tactical_cdr_on_kill
+		{
+		}
+		pas_run_and_gun
+		{
+		}
+		smart_lock
+		{
+		}
+		pro_screen
+		{
+			"ui8_enable"			"0"
+		}
+		pas_fast_reload
+		{
+		}
+		pas_fast_ads
+		{
+		}
+		pas_fast_swap
+		{
+		}
+		burn_mod_rspn101
+		{
+		}
+	}
+}

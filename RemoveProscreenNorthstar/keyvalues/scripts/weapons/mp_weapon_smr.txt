@@ -1,0 +1,43 @@
+WeaponData
+{
+	Mods
+	{
+        slammer
+        {
+        }
+   		jump_kit
+        {
+        }
+        pro_screen
+        {
+			"ui8_enable"		"0"
+        }
+        extended_ammo
+		{
+		}
+		delayed_shot
+        {
+        }
+		pas_fast_reload
+		{
+		}
+		burn_mod_smr
+		{
+		}
+		pas_fast_ads
+		{
+		}
+		pas_fast_swap
+		{
+		}
+		tactical_cdr_on_kill
+		{
+		}
+		pas_run_and_gun
+		{
+		}
+		sp_s2s_settings
+		{
+		}
+	}
+}

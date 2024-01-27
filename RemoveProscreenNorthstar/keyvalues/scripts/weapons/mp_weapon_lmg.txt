@@ -1,0 +1,49 @@
+WeaponData
+{
+	Mods
+	{
+		iron_sights
+		{
+		}
+		aog
+		{
+		}
+		holosight
+		{
+		}
+		redline_sight
+		{
+		}
+		threat_scope
+		{
+		}
+		pro_screen
+		{
+			"ui8_enable"		"0"
+		}
+        slammer
+        {
+        }
+		extended_ammo
+		{
+		}
+		pas_fast_reload
+		{
+		}
+		pas_fast_ads
+		{
+		}
+		pas_fast_swap
+		{
+		}
+		tactical_cdr_on_kill
+		{
+		}
+		pas_run_and_gun
+		{
+		}
+		burn_mod_lmg
+		{
+		}
+	}
+}

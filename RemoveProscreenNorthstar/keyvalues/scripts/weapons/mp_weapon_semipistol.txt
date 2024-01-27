@@ -1,0 +1,37 @@
+WeaponData
+{
+	Mods
+	{
+		pas_fast_reload
+		{
+		}
+		extended_ammo
+		{
+		}
+		pas_run_and_gun
+		{
+		}
+		silencer //HACK JFS: Doesn't get applied on amped weapons. See bug 170460
+		{
+		}
+		pas_fast_ads
+		{
+		}
+		pas_fast_swap
+		{
+		}
+		pro_screen
+		{
+			"ui8_enable"			"0"
+		}
+		burn_mod_semipistol
+		{
+		}
+		tactical_cdr_on_kill
+		{
+		}
+		training_low_ammo_disable
+		{
+		}
+	}
+}

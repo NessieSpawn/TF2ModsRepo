@@ -1,0 +1,45 @@
+WeaponData
+{
+	Mods
+	{
+		// northstar weapon mods
+		sns
+		{
+		}
+
+		ar_trajectory
+		{
+		}
+        extended_ammo
+		{
+		}
+		pro_screen
+		{
+			"ui8_enable"		"0"
+		}
+		pro_screenextended_ammo
+		{
+		}
+		pas_fast_ads
+		{
+		}
+		pas_fast_swap
+		{
+		}
+		jump_kit
+        {
+        }
+		pas_fast_reload
+		{
+		}
+		burn_mod_softball
+		{
+		}
+		tactical_cdr_on_kill
+		{
+		}
+		pas_run_and_gun
+		{
+		}
+	}
+}

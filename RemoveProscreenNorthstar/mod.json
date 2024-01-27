@@ -1,0 +1,6 @@
+{
+	"Name" : "Remove Weapon Proscreen Display",
+	"Description" : "Don't want to know how many kills they got",
+	"Version": "1.0.0",
+	"LoadPriority": 2
+}
