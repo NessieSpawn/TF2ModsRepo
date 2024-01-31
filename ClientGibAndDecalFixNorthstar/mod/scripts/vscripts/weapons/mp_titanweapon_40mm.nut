@@ -179,7 +179,9 @@ void function OnShellEjectEvent( entity weapon )
 	vector angularVelocity = Vector( RandomFloatRange( -5.0, -1.0 ), 0, RandomFloatRange( -5.0, 5.0 ) )
 	float gibLifetime = 6.0
 	
-	bool isFirstPerson = IsLocalViewPlayer( weapon.GetWeaponOwner() )
+	// try to prevent creating bad gib during third person animation
+	entity owner = weapon.GetWeaponOwner()
+	bool isFirstPerson = IsLocalViewPlayer( owner ) && !owner.Anim_IsActive()
 	if ( isFirstPerson )
 	{
 		weaponEnt = weapon.GetWeaponOwner().GetViewModelEntity()
