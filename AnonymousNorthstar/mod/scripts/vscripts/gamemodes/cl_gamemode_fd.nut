@@ -155,7 +155,9 @@ void function ClGamemodeFD_Init()
 	RegisterConCommandTriggeredCallback( "scoreboard_focus", UseHarvesterShieldBoost )
 	RegisterConCommandTriggeredCallback( "scoreboard_toggle_focus", UseHarvesterShieldBoost )
 
-	SetScoreboardUpdateCallback( FD_ScoreboardUpdate )
+	// callback in cl_scoreboard_mp.nut has been modified, supports multiple callbacks
+	//SetScoreboardUpdateCallback( FD_ScoreboardUpdate )
+	AddScoreboardUpdateCallback( FD_ScoreboardUpdate )
 
 	waveEndScoreEvents = {
 		[ "FDTeamWave" ] = OnScoreEvent_FDTeamWave,

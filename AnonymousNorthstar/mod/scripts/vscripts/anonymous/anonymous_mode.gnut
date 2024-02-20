@@ -59,7 +59,7 @@ void function AnonymousMode_Client_Threaded()
     // wait for game RUI starts updating
     WaitFrame()
 
-    SetScoreboardUpdateCallback( OnScoreboardUpdate )
+    AddScoreboardUpdateCallback( OnScoreboardUpdate ) // callback in cl_scoreboard_mp.nut has been modified, supports multiple callbacks
     AddCallback_OnReceivedSayTextMessage( OnReceivedSayTextMessage ) // northstar custom chathook
 }
 
