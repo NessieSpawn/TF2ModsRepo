@@ -1,0 +1,6 @@
+{
+    "Name": "Disable Level UP Sounds",
+	"Description": "Leveling up still have sound even after disabling notifications. This mod disables sound also",
+	"LoadPriority": 2,
+	"Version": "1.0.0"
+}
