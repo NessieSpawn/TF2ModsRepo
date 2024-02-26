@@ -8,6 +8,9 @@ WeaponData
 		scope_4x
 		{
 		}
+		threat_scope
+		{
+		}
 		pro_screen
 		{
 			"ui8_enable"		"0"
