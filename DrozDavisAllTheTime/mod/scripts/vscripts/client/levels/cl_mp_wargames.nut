@@ -105,6 +105,8 @@ void function ServerCallback_SpawnIMCFactionLeaderForIntro( float animStartTime,
 	entity factionLeader = CreatePropDynamic( GetLastResortFactionModel(), < -2710, 2938, -1786 >, < 0, -147, 0 > )
 	thread PlayAnim( factionLeader, animName, null, null, DEFAULT_SCRIPTED_ANIMATION_BLEND_TIME, 0 )
 	factionLeader.Anim_SetStartTime( animStartTime - 4.5 )
+	// specified for droz&davis: they have model lights
+	SetTeam( factionLeader, localViewPlayer.GetTeam() )
 
 	file.factionLeaderIntroEnts.append( factionLeader )
 }
