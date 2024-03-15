@@ -582,17 +582,11 @@ void function RandomizeTitanCamo( entity player )
 			continue
 		}
 
-		bool usingPrimeLoadout = player.GetPersistentVar( "titanLoadouts[" + string( i ) + "].isPrime" ) == "titan_is_prime"
-		
-		array<string> skinProperties = ["skinIndex", "primarySkinIndex"]
-		if ( usingPrimeLoadout )
-			skinProperties = ["primeSkinIndex", "primarySkinIndex"]
+		array<string> skinProperties = ["skinIndex", "primeSkinIndex", "primarySkinIndex"]
 		foreach ( property in skinProperties )
 			player.ClientCommand( "SetPersistentLoadoutValue titan " + string( i ) + " " + property + " " + string( TITAN_SKIN_INDEX_CAMO ) )
 
-		array<string> camoProperties = ["camoIndex", "primaryCamoIndex"]
-		if ( usingPrimeLoadout )
-			camoProperties = ["primeCamoIndex", "primaryCamoIndex"]
+		array<string> camoProperties = ["camoIndex", "primeCamoIndex", "primaryCamoIndex"]
 		foreach ( property in camoProperties )
 		{
 			if ( !( property in file.usedTitanCamo ) )
