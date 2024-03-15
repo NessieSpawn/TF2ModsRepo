@@ -1,0 +1,614 @@
+global function SetUpLoadoutPersistenceVariales_Init
+
+const int MAX_PILOT_LOADOUT_INDEX = 9 // never change this! this means we have 10 loadouts in total
+const int MAX_TITAN_LOADOUT_INDEX = 6
+
+const array<int> COLORED_CAMO_INDEX = 
+[
+	16,		// gold
+	14,		// pine
+	83,		// purple
+	31,		// light
+	19,		// overcast
+	82,		// magenta
+	15,		// fern
+	17,		// orange
+	81,		// pink
+	18,		// sea
+	30,		// dark
+]
+const array<string> CAMO_DISABLED_WEAPONS =
+[
+	"mp_weapon_wingman_n",		// wingman elite with a camo works weird
+]
+
+struct
+{
+	array<int> usedPilotLoadoutIndex
+	array<int> usedTitanLoadoutIndex
+
+	table< string, array<int> > usedPilotCamo
+	table< string, array<int> > usedTitanCamo
+} file
+
+void function SetUpLoadoutPersistenceVariales_Init()
+{
+	AddCallback_OnClientScriptInit( OnClientScriptInit )
+	//AddCallback_OnPlayerLifeStateChanged( OnPlayerLifeStateChanged )
+	//AddCallback_OnPetTitanChanged( OnPetTitanChanged )
+}
+
+void function OnClientScriptInit( entity unknownPlayer )
+{
+	LoadoutPersistenceVariales()
+}
+
+void function OnPlayerLifeStateChanged( entity player, int oldLifeState, int newLifeState )
+{
+	if ( GetConVarBool( "randomize_pilot_loadout" ) )
+		player.ClientCommand( "RequestPilotLoadout " + GetRandomPilotLoadoutIndexString() )
+	RandomizeLoadout()
+}
+
+void function OnPetTitanChanged( entity player )
+{
+	if ( GetConVarBool( "randomize_titan_loadout" ) )
+		player.ClientCommand( "RequestTitanLoadout " + GetRandomTitanLoadoutIndexString() )
+	RandomizeLoadout()
+}
+
+void function LoadoutPersistenceVariales()
+{
+	thread LoadoutPersistenceVariales_Threaded()
+}
+
+void function LoadoutPersistenceVariales_Threaded()
+{
+	WaitEndFrame() // wait for InitDefaultLoadouts()
+
+	entity player = GetLocalClientPlayer()
+
+	//// pilot loadout ////
+	// pilot1
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 0 name Wingman" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 0 suit stalker" )
+	//player.ClientCommand( "SetPersistentLoadoutValue pilot 0 suit medium" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 0 race race_human_male" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 0 ordnance mp_weapon_thermite_grenade" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 0 primary mp_weapon_wingman_n" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 0 primaryMod1 extended_ammo" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 0 primaryMod2 ricochet" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 0 secondary mp_weapon_rocket_launcher" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 0 secondaryMod1 pas_fast_ads" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 0 secondaryMod2 pas_fast_reload" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 0 weapon3 mp_weapon_wingman" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 0 weapon3Mod1 extended_ammo" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 0 weapon3Mod2 pas_fast_ads" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 0 passive1 pas_power_cell" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 0 passive2 pas_wallhang" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 0 execution execution_random" )
+
+	wait 0.1 // so we don't trigger anti-spam
+	//player.ClientCommand( "RequestPilotLoadout 0" )
+	//player.ClientCommand( "LoadoutMenuClosed" )
+
+	// pilot2
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 1 name Kraber" )
+	//player.ClientCommand( "SetPersistentLoadoutValue pilot 1 suit medium" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 1 suit stalker" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 1 race race_human_male" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 1 ordnance mp_weapon_thermite_grenade" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 1 primary mp_weapon_sniper" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 1 primaryMod1 pas_fast_ads" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 1 primaryMod2 ricochet" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 1 secondary mp_weapon_rocket_launcher" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 1 secondaryMod1 pas_fast_ads" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 1 secondaryMod2 pas_fast_reload" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 1 weapon3 mp_weapon_wingman" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 1 weapon3Mod1 extended_ammo" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 1 weapon3Mod2 pas_fast_ads" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 1 passive1 pas_power_cell" )
+	//player.ClientCommand( "SetPersistentLoadoutValue pilot 1 passive2 pas_ads_hover" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 1 passive2 pas_at_hunter" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 1 execution execution_random" )
+
+	wait 0.1 // so we don't trigger anti-spam
+	//player.ClientCommand( "RequestPilotLoadout 1" )
+	//player.ClientCommand( "LoadoutMenuClosed" )
+
+	// pilot3
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 2 name EPG" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 2 suit stalker" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 2 race race_human_male" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 2 ordnance mp_weapon_grenade_electric_smoke" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 2 primary mp_weapon_epg" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 2 primaryMod1 extended_ammo" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 2 primaryMod2 pas_fast_swap" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 2 secondary mp_weapon_defender" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 2 secondaryMod1 quick_charge" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 2 secondaryMod2 extended_ammo" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 2 weapon3 mp_weapon_wingman" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 2 weapon3Mod1 extended_ammo" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 2 weapon3Mod2 silencer" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 2 passive1 pas_power_cell" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 2 passive2 pas_at_hunter" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 2 execution execution_random" )
+
+	wait 0.1 // so we don't trigger anti-spam
+	//player.ClientCommand( "RequestPilotLoadout 2" )
+	//player.ClientCommand( "LoadoutMenuClosed" )
+
+	// pilot4
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 3 name Double Take" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 3 suit stalker" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 3 race race_human_male" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 3 ordnance mp_weapon_grenade_electric_smoke" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 3 primary mp_weapon_doubletake" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 3 primaryMod1 pas_fast_ads" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 3 primaryMod2 ricochet" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 3 secondary mp_weapon_mgl" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 3 secondaryMod1 pas_fast_reload" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 3 secondaryMod2 extended_ammo" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 3 weapon3 mp_weapon_autopistol" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 3 weapon3Mod1 extended_ammo" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 3 weapon3Mod2 silencer" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 3 passive1 pas_power_cell" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 3 passive2 pas_at_hunter" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 3 execution execution_random" )
+
+	wait 0.1 // so we don't trigger anti-spam
+	//player.ClientCommand( "RequestPilotLoadout 3" )
+	//player.ClientCommand( "LoadoutMenuClosed" )
+
+	// pilot5
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 4 name G2" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 4 suit stalker" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 4 race race_human_male" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 4 ordnance mp_weapon_grenade_emp" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 4 primary mp_weapon_g2" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 4 primaryMod1 extended_ammo" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 4 primaryMod2 pas_fast_ads" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 4 secondary mp_weapon_arc_launcher" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 4 secondaryMod1 pas_fast_reload" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 4 secondaryMod2 extended_ammo" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 4 weapon3 mp_weapon_semipistol" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 4 weapon3Mod1 extended_ammo" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 4 weapon3Mod2 silencer" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 4 passive1 pas_power_cell" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 4 passive2 pas_at_hunter" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 4 execution execution_random" )
+
+	wait 0.1 // so we don't trigger anti-spam
+	//player.ClientCommand( "RequestPilotLoadout 4" )
+	//player.ClientCommand( "LoadoutMenuClosed" )
+
+	// pilot6
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 5 name Hemlok" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 5 suit stalker" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 5 race race_human_male" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 5 ordnance mp_weapon_grenade_emp" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 5 primary mp_weapon_hemlok" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 5 primaryMod1 extended_ammo" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 5 primaryMod2 pas_fast_ads" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 5 secondary mp_weapon_defender" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 5 secondaryMod1 quick_charge" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 5 secondaryMod2 extended_ammo" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 5 weapon3 mp_weapon_wingman" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 5 weapon3Mod1 extended_ammo" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 5 weapon3Mod2 pas_fast_ads" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 5 passive1 pas_power_cell" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 5 passive2 pas_at_hunter" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 5 execution execution_random" )
+
+	wait 0.1 // so we don't trigger anti-spam
+	//player.ClientCommand( "RequestPilotLoadout 5" )
+	//player.ClientCommand( "LoadoutMenuClosed" )
+
+	// pilot7
+	/*
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 name Alternator" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 suit stalker" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 race race_human_male" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 ordnance mp_weapon_frag_grenade" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 primary mp_weapon_alternator_smg" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 primaryMod1 extended_ammo" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 primaryMod2 pas_fast_swap" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 secondary mp_weapon_rocket_launcher" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 secondaryMod1 pas_fast_ads" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 secondaryMod2 pas_fast_reload" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 weapon3 mp_weapon_wingman" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 weapon3Mod1 extended_ammo" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 weapon3Mod2 silencer" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 passive1 pas_power_cell" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 passive2 pas_at_hunter" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 execution execution_random" )
+	*/
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 name L-STAR" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 suit stalker" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 race race_human_male" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 ordnance mp_weapon_satchel" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 primary mp_weapon_lstar" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 primaryMod1 extended_ammo" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 primaryMod2 pas_fast_swap" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 secondary mp_weapon_rocket_launcher" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 secondaryMod1 pas_fast_ads" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 secondaryMod2 pas_fast_reload" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 weapon3 mp_weapon_wingman" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 weapon3Mod1 extended_ammo" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 weapon3Mod2 silencer" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 passive1 pas_power_cell" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 passive2 pas_at_hunter" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 6 execution execution_random" )
+
+	wait 0.1 // so we don't trigger anti-spam
+	//player.ClientCommand( "RequestPilotLoadout 6" )
+	//player.ClientCommand( "LoadoutMenuClosed" )
+
+	// pilot8
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 7 name SMR" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 7 suit stalker" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 7 race race_human_male" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 7 ordnance mp_weapon_satchel" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 7 primary mp_weapon_smr" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 7 primaryMod1 extended_ammo" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 7 primaryMod2 pas_fast_swap" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 7 secondary mp_weapon_arc_launcher" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 7 secondaryMod1 extended_ammo" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 7 secondaryMod2 pas_fast_reload" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 7 weapon3 mp_weapon_autopistol" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 7 weapon3Mod1 extended_ammo" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 7 weapon3Mod2 silencer" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 7 passive1 pas_power_cell" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 7 passive2 pas_at_hunter" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 7 execution execution_random" )
+
+	wait 0.1 // so we don't trigger anti-spam
+	//player.ClientCommand( "RequestPilotLoadout 7" )
+	//player.ClientCommand( "LoadoutMenuClosed" )
+
+	// pilot9
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 8 name Mastiff" )
+	//player.ClientCommand( "SetPersistentLoadoutValue pilot 8 suit medium" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 8 suit stalker" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 8 race race_human_male" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 8 ordnance mp_weapon_thermite_grenade" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 8 primary mp_weapon_mastiff" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 8 primaryMod1 extended_ammo" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 8 primaryMod2 pas_fast_ads" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 8 secondary mp_weapon_rocket_launcher" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 8 secondaryMod1 pas_fast_ads" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 8 secondaryMod2 pas_fast_reload" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 8 weapon3 mp_weapon_semipistol" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 8 weapon3Mod1 extended_ammo" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 8 weapon3Mod2 silencer" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 8 passive1 pas_power_cell" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 8 passive2 pas_wallhang" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 8 execution execution_random" )
+
+	wait 0.1 // so we don't trigger anti-spam
+	//player.ClientCommand( "RequestPilotLoadout 8" )
+	//player.ClientCommand( "LoadoutMenuClosed" )
+
+	// pilot10
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 9 name Mozambique" )
+	//player.ClientCommand( "SetPersistentLoadoutValue pilot 9 suit medium" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 9 suit stalker" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 9 race race_human_male" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 9 ordnance mp_weapon_thermite_grenade" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 9 primary mp_weapon_shotgun_pistol" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 9 primaryMod1 extended_ammo" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 9 primaryMod2 silencer" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 9 secondary mp_weapon_rocket_launcher" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 9 secondaryMod1 pas_fast_ads" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 9 secondaryMod2 pas_fast_reload" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 9 weapon3 mp_weapon_wingman" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 9 weapon3Mod1 extended_ammo" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 9 weapon3Mod2 silencer" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 9 passive1 pas_power_cell" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 9 passive2 pas_wallhang" )
+	player.ClientCommand( "SetPersistentLoadoutValue pilot 9 execution execution_random" )
+
+	wait 0.1 // so we don't trigger anti-spam
+	//player.ClientCommand( "RequestPilotLoadout 9" )
+	//player.ClientCommand( "LoadoutMenuClosed" )
+
+	// burncard
+	player.ClientCommand( "SetBurnCardPersistenceSlot burnmeter_random_foil" )
+	
+
+	//// titan loadout ////
+	// ion
+	player.ClientCommand( "SetPersistentLoadoutValue titan 0 passive2 pas_ion_weapon_ads" )
+	//player.ClientCommand( "SetPersistentLoadoutValue titan 0 passive3 pas_warpfall" )
+	//player.ClientCommand( "SetPersistentLoadoutValue titan 0 isPrime titan_is_prime" )
+
+	// scorch
+	player.ClientCommand( "SetPersistentLoadoutValue titan 1 passive2 pas_scorch_flamecore" )
+	//player.ClientCommand( "SetPersistentLoadoutValue titan 1 passive3 pas_warpfall" )
+	//player.ClientCommand( "SetPersistentLoadoutValue titan 1 isPrime titan_is_prime" )
+
+	// northstar
+	player.ClientCommand( "SetPersistentLoadoutValue titan 2 passive2 pas_northstar_flightcore" )
+	//player.ClientCommand( "SetPersistentLoadoutValue titan 2 passive3 pas_warpfall" )
+	//player.ClientCommand( "SetPersistentLoadoutValue titan 2 isPrime titan_is_prime" )
+
+	// ronin
+	player.ClientCommand( "SetPersistentLoadoutValue titan 3 passive2 pas_ronin_weapon" )
+	//player.ClientCommand( "SetPersistentLoadoutValue titan 3 passive3 pas_warpfall" )
+	//player.ClientCommand( "SetPersistentLoadoutValue titan 3 isPrime titan_is_prime" )
+
+	// tone
+	player.ClientCommand( "SetPersistentLoadoutValue titan 4 passive2 pas_tone_burst" )
+	//player.ClientCommand( "SetPersistentLoadoutValue titan 4 passive3 pas_warpfall" )
+	//player.ClientCommand( "SetPersistentLoadoutValue titan 4 isPrime titan_is_prime" )
+
+	// legion
+	player.ClientCommand( "SetPersistentLoadoutValue titan 5 passive2 pas_legion_spinup" )
+	//player.ClientCommand( "SetPersistentLoadoutValue titan 5 passive3 pas_warpfall" )
+	//player.ClientCommand( "SetPersistentLoadoutValue titan 5 isPrime titan_is_prime" )
+
+	wait 0.1 // so we don't trigger anti-spam
+
+	// monarch
+	player.ClientCommand( "SetPersistentLoadoutValue titan 6 passive2 pas_vanguard_doom" )
+	//player.ClientCommand( "SetPersistentLoadoutValue titan 6 passive3 pas_warpfall" )
+	player.ClientCommand( "SetPersistentLoadoutValue titan 6 passive4 pas_vanguard_core3" )
+	player.ClientCommand( "SetPersistentLoadoutValue titan 6 passive5 pas_vanguard_core6" )
+	player.ClientCommand( "SetPersistentLoadoutValue titan 6 passive6 pas_vanguard_core8" )
+	//player.ClientCommand( "SetPersistentLoadoutValue titan 6 skinIndex 3" )
+
+
+	//// callsign ////
+	player.ClientCommand( "SetCallsignCard callsign_10_col" )
+	player.ClientCommand( "SetCallsignIcon gc_icon_dice" )
+	#if !HAS_FACTION_LEADER_OVERRIDE
+		player.ClientCommand( "SetFactionChoicePersistenceSlot faction_marvin" )
+	#endif
+
+
+	wait 0.1 // so we don't trigger anti-spam
+
+	//// in-game ////
+	//RandomizeLoadout()
+	if ( !IsLobby() )
+	{
+		// now handled by callbacks
+		// nah, still better to be handled by loops
+		wait 1 // wait for player to be actually spawned into game
+		
+		print( "starting randomize loadout" )
+		if ( IsAlive( player ) ) // if player already alive, manually do a random loadout here
+		{
+			player.ClientCommand( "RequestPilotLoadout " + GetRandomPilotLoadoutIndexString() )
+			waitthread RandomizePilotCamo( player )
+			player.ClientCommand( "LoadoutMenuClosed" )
+		}
+		thread RandomizeLoadoutOnRespawnThink()
+
+		player.ClientCommand( "RequestTitanLoadout " + GetRandomTitanLoadoutIndexString() )
+		waitthread UpdateTitanPrimeState()
+		thread RandomizeTitanCamo( player )
+		thread RandomizeLoadoutOnTitanfallThink()
+	}
+	else
+	{
+		player.ClientCommand( "RequestPilotLoadout " + GetRandomPilotLoadoutIndexString() )
+		player.ClientCommand( "RequestTitanLoadout " + GetRandomTitanLoadoutIndexString() )
+		thread RandomizePilotCamo( player )
+		waitthread UpdateTitanPrimeState()
+		thread RandomizeTitanCamo( player )
+	}
+}
+
+void function RandomizeLoadout()
+{
+	entity player = GetLocalClientPlayer()
+	if ( GetConVarBool( "randomize_pilot_loadout" ) )
+		player.ClientCommand( "RequestPilotLoadout " + GetRandomPilotLoadoutIndexString() )
+	if ( GetConVarBool( "randomize_titan_loadout" ) )
+		player.ClientCommand( "RequestTitanLoadout " + GetRandomTitanLoadoutIndexString() )
+
+	if ( !IsLobby() )
+	{
+		if ( GetConVarBool( "randomize_pilot_loadout" ) )
+			player.ClientCommand( "LoadoutMenuClosed" )
+	}
+
+	thread UpdateTitanPrimeState()
+}
+
+void function UpdateTitanPrimeState()
+{
+	entity player = GetLocalClientPlayer()
+
+	wait 0.1 // so we don't trigger anti-spam
+	if ( GetConVarBool( "randomize_prime_titan" ) )
+	{
+		bool usePrimeTitan = CoinFlip()
+		for ( int i = 0; i < MAX_TITAN_LOADOUT_INDEX; i++ )
+		{
+			string titanIndexStr = string( i )
+			string primeTitanStr = usePrimeTitan ? "titan_is_prime" : "titan_is_not_prime"
+			player.ClientCommand( "SetPersistentLoadoutValue titan " + titanIndexStr + " isPrime " + primeTitanStr )
+		}
+
+		wait 0.1 // so we don't trigger anti-spam
+		// HACK for monarch: update skin to use fakeBT
+		if ( usePrimeTitan )
+		{
+			player.ClientCommand( "SetPersistentLoadoutValue titan 6 skinIndex 3" )
+			// reset weapon camo
+			player.ClientCommand( "SetPersistentLoadoutValue titan 6 primarySkinIndex 0" )
+			player.ClientCommand( "SetPersistentLoadoutValue titan 6 primaryCamoIndex 0" )
+		}
+		else
+			player.ClientCommand( "SetPersistentLoadoutValue titan 6 skinIndex " + string( TITAN_SKIN_INDEX_CAMO ) )
+	}
+}
+
+void function RandomizeLoadoutOnRespawnThink()
+{
+	while ( true )
+	{
+		clGlobal.levelEnt.WaitSignal( "LocalClientPlayerRespawned" )
+
+		WaitFrame() // wait for player to become titan
+		entity player = GetLocalClientPlayer()
+		if ( !IsValid( player ) )
+			continue
+		if ( player.IsTitan() )
+			continue
+		if ( GetConVarBool( "randomize_pilot_loadout" ) )
+			player.ClientCommand( "RequestPilotLoadout " + GetRandomPilotLoadoutIndexString() )
+		//RandomizeLoadout()
+		if ( GetConVarBool( "randomize_pilot_camo" ) )
+			waitthread RandomizePilotCamo( player )
+
+		if ( !IsLobby() )
+		{
+			if ( GetConVarBool( "randomize_pilot_loadout" ) || GetConVarBool( "randomize_pilot_camo" ) )
+				player.ClientCommand( "LoadoutMenuClosed" )
+		}
+	}
+}
+
+void function RandomizePilotCamo( entity player )
+{
+	wait 0.1 // so we don't trigger anti-spam
+	for ( int i = 0; i < MAX_PILOT_LOADOUT_INDEX + 1; i++ )
+	{
+		array<string> weaponProperties = ["", "primary", "secondary", "weapon3"] // "" means this isn't a weapon
+
+		array<string> skinProperties = ["skinIndex", "primarySkinIndex", "secondarySkinIndex", "weapon3SkinIndex"]
+		foreach ( property in skinProperties )
+			player.ClientCommand( "SetPersistentLoadoutValue pilot " + string( i ) + " " + property + " " + string( PILOT_SKIN_INDEX_CAMO ) )
+
+		array<string> camoProperties = ["camoIndex", "primaryCamoIndex", "secondaryCamoIndex", "weapon3CamoIndex"]
+		foreach ( int j, property in camoProperties )
+		{
+			string weaponProperty = weaponProperties[j]
+			if ( weaponProperty != "" )
+			{
+				string weaponName = expect string( player.GetPersistentVar( "pilotLoadouts[" + string( i ) + "]." + weaponProperty ) )
+				if ( CAMO_DISABLED_WEAPONS.contains( weaponName ) )
+					continue
+			}
+			
+			if ( !( property in file.usedPilotCamo ) )
+				file.usedPilotCamo[ property ] <- []
+				
+			if ( file.usedPilotCamo[ property ].len() == COLORED_CAMO_INDEX.len() )
+				file.usedPilotCamo[ property ].clear()
+			
+			int newCamo = COLORED_CAMO_INDEX[ RandomInt( COLORED_CAMO_INDEX.len() ) ]
+			while ( file.usedPilotCamo[ property ].contains( newCamo ) )
+				newCamo = COLORED_CAMO_INDEX[ RandomInt( COLORED_CAMO_INDEX.len() ) ]
+
+			player.ClientCommand( "SetPersistentLoadoutValue pilot " + string( i ) + " " + property + " " + string( newCamo ) )
+			file.usedPilotCamo[ property ].append( newCamo )
+		}
+		wait 0.1 // so we don't trigger anti-spam
+	}
+}
+
+void function RandomizeLoadoutOnTitanfallThink()
+{
+	while ( true )
+	{
+		// wait till player become valid
+		while ( !IsValid( GetLocalClientPlayer() ) )
+			WaitFrame()
+
+		entity player = GetLocalClientPlayer()
+		WaitSignal( player, "PetTitanChanged", "OnDestroy" )
+		if ( !IsValid( player ) )
+			continue
+
+		wait 1 // wait for pet to die
+		player = GetLocalClientPlayer() // update our client player here
+		if ( !IsValid( player ) )
+			continue
+		if ( !IsAlive( player.GetPetTitan() ) ) // this means our pet actually died, no need to update again
+			continue
+		
+		//print( "pet titan alive!" )
+		if ( GetConVarBool( "randomize_titan_loadout" ) )
+			player.ClientCommand( "RequestTitanLoadout " + GetRandomTitanLoadoutIndexString() )
+		//RandomizeLoadout()
+		if ( GetConVarBool( "randomize_prime_titan" ) )
+			waitthread UpdateTitanPrimeState()
+		if ( GetConVarBool( "randomize_titan_camo" ) )
+			waitthread RandomizeTitanCamo( player )
+	}
+}
+
+void function RandomizeTitanCamo( entity player )
+{
+	wait 0.1 // so we don't trigger anti-spam
+	for ( int i = 0; i < MAX_TITAN_LOADOUT_INDEX + 1; i++ )
+	{
+		// HACK for monarch: consider we're using fakeBT if skin index is 3
+		// don't do camo update
+		if ( i == 6 && player.GetPersistentVarAsInt( "titanLoadouts[6].skinIndex" ) == 3 )
+		{
+			//print( "we got fakeBT monarch!" )g
+			continue
+		}
+
+		bool usingPrimeLoadout = player.GetPersistentVar( "titanLoadouts[" + string( i ) + "].isPrime" ) == "titan_is_prime"
+		
+		array<string> skinProperties = ["skinIndex", "primarySkinIndex"]
+		if ( usingPrimeLoadout )
+			skinProperties = ["primeSkinIndex", "primarySkinIndex"]
+		foreach ( property in skinProperties )
+			player.ClientCommand( "SetPersistentLoadoutValue titan " + string( i ) + " " + property + " " + string( TITAN_SKIN_INDEX_CAMO ) )
+
+		array<string> camoProperties = ["camoIndex", "primaryCamoIndex"]
+		if ( usingPrimeLoadout )
+			camoProperties = ["primeCamoIndex", "primaryCamoIndex"]
+		foreach ( property in camoProperties )
+		{
+			if ( !( property in file.usedTitanCamo ) )
+				file.usedTitanCamo[ property ] <- []
+				
+			if ( file.usedTitanCamo[ property ].len() == COLORED_CAMO_INDEX.len() )
+				file.usedTitanCamo[ property ].clear()
+			
+			int newCamo = COLORED_CAMO_INDEX[ RandomInt( COLORED_CAMO_INDEX.len() ) ]
+			while ( file.usedTitanCamo[ property ].contains( newCamo ) )
+				newCamo = COLORED_CAMO_INDEX[ RandomInt( COLORED_CAMO_INDEX.len() ) ]
+
+			player.ClientCommand( "SetPersistentLoadoutValue titan " + string( i ) + " " + property + " " + string( newCamo ) )
+			file.usedTitanCamo[ property ].append( newCamo )
+		}
+		wait 0.1 // so we don't trigger anti-spam
+	}
+}
+
+string function GetRandomPilotLoadoutIndexString()
+{
+	if ( file.usedPilotLoadoutIndex.len() > MAX_PILOT_LOADOUT_INDEX )
+		file.usedPilotLoadoutIndex.clear()
+
+	// loop until we get an unused value...
+	int randomValue = RandomInt( MAX_PILOT_LOADOUT_INDEX + 1 )
+	while ( file.usedPilotLoadoutIndex.contains( randomValue ) )
+		randomValue = RandomInt( MAX_PILOT_LOADOUT_INDEX + 1 )
+
+	file.usedPilotLoadoutIndex.append( randomValue )
+	return string( randomValue )
+}
+
+string function GetRandomTitanLoadoutIndexString()
+{
+	if ( file.usedTitanLoadoutIndex.len() > MAX_TITAN_LOADOUT_INDEX )
+		file.usedTitanLoadoutIndex.clear()
+
+	// loop until we get an unused value...
+	int randomValue = RandomInt( MAX_TITAN_LOADOUT_INDEX + 1 )
+	while ( file.usedTitanLoadoutIndex.contains( randomValue ) )
+		randomValue = RandomInt( MAX_TITAN_LOADOUT_INDEX + 1 )
+
+	file.usedTitanLoadoutIndex.append( randomValue )
+	return string( randomValue )
+}

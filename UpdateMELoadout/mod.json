@@ -1,0 +1,44 @@
+{
+    "Name": "Auto Loadout on Joining Server",
+	"Description": "I'll need this. Randomize costume items",
+	"LoadPriority": 3,
+	"Version": "1.0.0",
+
+	"Dependencies":
+    {
+      	"HAS_FACTION_LEADER_OVERRIDE": "Droz & Davis Faction Leader All The Time"
+    },
+
+	"ConVars": [
+		{
+			"Name": "randomize_pilot_loadout",
+			"DefaultValue": "1"
+		},
+		{
+			"Name": "randomize_titan_loadout",
+			"DefaultValue": "1"
+		},
+		{
+			"Name": "randomize_prime_titan",
+			"DefaultValue": "1"
+		},
+		{
+			"Name": "randomize_pilot_camo",
+			"DefaultValue": "1"
+		},
+		{
+			"Name": "randomize_titan_camo",
+			"DefaultValue": "1"
+		}
+	],
+
+	"Scripts": [
+		{
+			"Path": "/loadout_persistence_setup.gnut",
+			"RunOn": "CLIENT && MP",
+			"ClientCallback": {
+				"After": "SetUpLoadoutPersistenceVariales_Init"
+			}
+		}
+	]
+}
