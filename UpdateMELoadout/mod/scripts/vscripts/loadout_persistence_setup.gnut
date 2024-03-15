@@ -530,6 +530,9 @@ void function RandomizeLoadoutOnTitanfallThink()
 			continue
 		if ( !IsAlive( player.GetPetTitan() ) ) // this means our pet actually died, no need to update again
 			continue
+
+		// so reaching here means we've got a new pet...
+		// due they'll get destroyed on embark and gets re-created on disembark, we'd better handle them through a loop
 		
 		//print( "pet titan alive!" )
 		if ( GetConVarBool( "randomize_titan_loadout" ) )
@@ -539,6 +542,30 @@ void function RandomizeLoadoutOnTitanfallThink()
 			waitthread UpdateTitanPrimeState()
 		if ( GetConVarBool( "randomize_titan_camo" ) )
 			waitthread RandomizeTitanCamo( player )
+
+		// handling new pet
+		entity petTitan = player.GetPetTitan()
+		if ( !IsValid( petTitan ) )
+			continue
+		
+		while ( true )
+		{
+			WaitSignal( petTitan, "OnDestroy", "OnDeath" )
+			if ( !IsValid( petTitan ) ) // this must means pet has transferred to player... we wait for player dies or recreates their pet
+			{
+				WaitSignal( player, "PetTitanChanged", "OnDestroy", "OnDeath" )
+				if ( !IsAlive( player ) ) // player died or destroyed, can break current loop
+					break
+				else // this must means new pet created!
+				{
+					petTitan = player.GetPetTitan() // update pet
+					if ( !IsValid( petTitan ) )
+						break
+				}
+			}
+			else if ( !IsAlive( petTitan ) ) // our pet dies normally, can break current loop
+				break
+		}
 	}
 }
 
