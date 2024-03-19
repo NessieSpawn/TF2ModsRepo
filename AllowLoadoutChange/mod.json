@@ -1,0 +1,6 @@
+{
+	"Name": "Allow Callsign and Burncard change on connection",
+	"Description": "Yay, just for fun. Requires Super.Mixed.Game or Attrition Extended (Overhaul)",
+	"Version": "1.0.0",
+	"LoadPriority": 20		// overwrites attrition extended
+}
