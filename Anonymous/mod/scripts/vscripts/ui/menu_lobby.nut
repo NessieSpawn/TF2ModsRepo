@@ -21,6 +21,7 @@ global function InviteFriendsIfAllowed
 global function SetPutPlayerInMatchmakingAfterDelay
 
 global function DLCStoreShouldBeMarkedAsNew
+global function StartNSPrivateMatch
 
 global function SetNextAutoMatchmakingPlaylist
 global function GetNextAutoMatchmakingPlaylist
@@ -66,6 +67,7 @@ struct
 	var inviteFriendsButton
 	var inviteFriendsToNetworkButton
 	var toggleMenuModeButton
+	var customButton
 
 	var networksMoreButton
 
@@ -234,18 +236,56 @@ void function SetupComboButtonTest( var menu )
 	int headerIndex = 0
 	int buttonIndex = 0
 	file.playHeader = AddComboButtonHeader( comboStruct, headerIndex, "#MENU_HEADER_PLAY" )
-	file.findGameButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#MENU_TITLE_FIND_GAME" )
-	file.lobbyButtons.append( file.findGameButton )
-	Hud_AddEventHandler( file.findGameButton, UIE_CLICK, BigPlayButton1_Activate )
+	
+	bool isModded = IsNorthstarServer()
+	
+	
+	// this will be the server browser
+	if ( isModded )
+	{
+		file.findGameButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#MENU_TITLE_SERVER_BROWSER" )
+		file.lobbyButtons.append( file.findGameButton )
+		Hud_SetLocked( file.findGameButton, true )
+		Hud_AddEventHandler( file.findGameButton, UIE_CLICK, OpenServerBrowser )
+	}
+	else
+	{
+		file.findGameButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#MENU_TITLE_FIND_GAME" )
+		file.lobbyButtons.append( file.findGameButton )
+		Hud_AddEventHandler( file.findGameButton, UIE_CLICK, BigPlayButton1_Activate )
+	}
 
-	file.inviteRoomButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#MENU_TITLE_INVITE_ROOM" )
-	Hud_AddEventHandler( file.inviteRoomButton, UIE_CLICK, DoRoomInviteIfAllowed )
+	// this is used for launching private matches now
+	if ( isModded )
+	{
+		file.inviteRoomButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#MENU_TITLE_FIND_GAME" )
+		Hud_AddEventHandler( file.inviteRoomButton, UIE_CLICK, BigPlayButton1_Activate )
+	}
+	else
+	{
+		file.inviteRoomButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#MENU_TITLE_INVITE_ROOM" )
+		Hud_AddEventHandler( file.inviteRoomButton, UIE_CLICK, DoRoomInviteIfAllowed )	
+	}
 
+	if ( isModded )
+	{
+		file.customButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "設置戰隊標籤" )
+		file.lobbyButtons.append( file.customButton )
+		Hud_AddEventHandler( file.customButton, UIE_CLICK, OnCustomClantagButton_Activate )
+	}
+	
+	
 	file.inviteFriendsButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#MENU_TITLE_INVITE_FRIENDS" )
 	Hud_AddEventHandler( file.inviteFriendsButton, UIE_CLICK, InviteFriendsIfAllowed )
 
-	// file.toggleMenuModeButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#MENU_LOBBY_SWITCH_FD" )
-	// Hud_AddEventHandler( file.toggleMenuModeButton, UIE_CLICK, ToggleLobbyMode )
+	if ( isModded )
+	{
+		Hud_SetEnabled( file.inviteFriendsButton, false )
+		Hud_SetVisible( file.inviteFriendsButton, false )
+	}
+
+	//file.toggleMenuModeButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#MENU_LOBBY_SWITCH_FD" )
+	//Hud_AddEventHandler( file.toggleMenuModeButton, UIE_CLICK, ToggleLobbyMode )
 
 	headerIndex++
 	buttonIndex = 0
@@ -322,8 +362,11 @@ void function SetupComboButtonTest( var menu )
 		var soundButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#VIDEO" )
 		Hud_AddEventHandler( soundButton, UIE_CLICK, AdvanceMenuEventHandler( GetMenu( "VideoMenu" ) ) )
 	#endif
-	file.faqButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#KNB_MENU_HEADER" )
-	Hud_AddEventHandler( file.faqButton, UIE_CLICK, AdvanceMenuEventHandler( GetMenu( "KnowledgeBaseMenu" ) ) )
+	//file.faqButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#KNB_MENU_HEADER" )
+	//Hud_AddEventHandler( file.faqButton, UIE_CLICK, AdvanceMenuEventHandler( GetMenu( "KnowledgeBaseMenu" ) ) )
+	// MOD SETTINGS
+	var modSettingsButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#MOD_SETTINGS" )
+	Hud_AddEventHandler( modSettingsButton, UIE_CLICK, AdvanceMenuEventHandler( GetMenu( "ModSettings" ) ) )
 
 	comboStruct.navUpButtonDisabled = true
 	comboStruct.navDownButton = file.genUpButton
@@ -334,6 +377,16 @@ void function SetupComboButtonTest( var menu )
 bool function MatchResultsExist()
 {
 	return true // TODO
+}
+
+void function StartNSPrivateMatch( var button )
+{
+	if ( Hud_IsLocked( button ) )
+		return
+
+	ClientCommand( "StartPrivateMatchSearch" )
+	NSSetLoading(true)
+	NSUpdateListenServer()
 }
 
 void function DoRoomInviteIfAllowed( var button )
@@ -597,9 +650,9 @@ void function OnLobbyMenu_Open()
 			ComboButton_SetNew( file.factionButton, anyNewFactions )
 		}
 
-		bool faqIsNew = !GetConVarBool( "menu_faq_viewed" ) || HaveNewPatchNotes() || HaveNewCommunityNotes()
+		/*bool faqIsNew = !GetConVarBool( "menu_faq_viewed" ) || HaveNewPatchNotes() || HaveNewCommunityNotes()
 		RuiSetBool( Hud_GetRui( file.settingsHeader ), "isNew", faqIsNew )
-		ComboButton_SetNew( file.faqButton, faqIsNew )
+		ComboButton_SetNew( file.faqButton, faqIsNew )*/
 
 		TryUnlockSRSCallsign()
 
@@ -1001,7 +1054,14 @@ void function UpdateMatchmakingStatus()
 					string etaStr = ""
 					if ( !etaSeconds && !isConnectingToMatch )
 					{
-						matchmakingStatus = "#MATCHMAKING_SEARCHING_FOR_MATCH"
+						if (matchmakingStatus == "#MATCHMAKING_ALLOCATING_SERVER")
+						{
+							MatchmakingSetSearchText("#MATCHMAKING_ALLOCATING_SERVER")
+						}
+						else
+						{
+							matchmakingStatus = "#MATCHMAKING_SEARCHING_FOR_MATCH"
+						}
 					}
 					else
 					{
@@ -1110,7 +1170,7 @@ void function SetUIPlayerCreditsInfo( var infoElement, int credits, int xp, int 
 {
 	var rui = Hud_GetRui( infoElement )
 	RuiSetInt( rui, "credits", credits )
-	// modified for anonymous mod: remove player name display
+	// modified for anonymous mode
 	//RuiSetString( rui, "nameText", GetPlayerName() )
 	RuiSetString( rui, "nameText", ANONYMOUS_DEFAULT_NAME )
 
@@ -1145,9 +1205,17 @@ void function SetUIPlayerCreditsInfo( var infoElement, int credits, int xp, int 
 
 	CallsignIcon callsignIcon = PlayerCallsignIcon_GetActive( GetLocalClientPlayer() )
 
-	// modified for anonymous mod: remove player callsign
-	//RuiSetImage( rui, "callsignIcon", callsignIcon.image )
-	RuiSetImage( rui, "callsignIcon", $"rui/gencard_icons/gc_icon_blank" )
+	RuiSetImage( rui, "callsignIcon", callsignIcon.image )
+}
+
+void function OpenServerBrowser( var button )
+{
+	if ( Hud_IsLocked( button ) )
+		return
+
+	// nothing here yet lol
+	// look at OpenSelectedPlaylistMenu for advancing to server browser menu probably
+	AdvanceMenu( GetMenu( "ServerBrowserMenu" ) )
 }
 
 void function BigPlayButton1_Activate( var button )
@@ -1193,7 +1261,7 @@ function UpdateLobbyUI()
 	thread UpdateLobbyType()
 	thread UpdateMatchmakingStatus()
 	thread UpdateChatroomThread()
-	thread UpdateInviteJoinButton()
+	//thread UpdateInviteJoinButton()
 	thread UpdateInviteFriendsToNetworkButton()
 	thread UpdatePlayerInfo()
 

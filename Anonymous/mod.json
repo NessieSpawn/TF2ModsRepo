@@ -2,15 +2,9 @@
 	"Name" : "Anonymous Mode",
 	"Description" : "Hides everything that is evil to us",
 	"Version": "1.0.0",
-	"LoadPriority": 2,
+	"LoadPriority": 8,		// needs to overwrite titan framework
 
 	"Scripts": [
-		// taken from northstar.client, client dependency
-		{
-			"Path": "/northstar/_custom_codecallbacks_client.gnut",
-			"RunOn": "CLIENT"
-    	},
-		// main functioning script
 		{
 			"Path": "/anonymous/anonymous_mode.gnut",
 			"RunOn": "( CLIENT && MP ) || UI",
@@ -26,5 +20,9 @@
 		// 		"After": "Anonymous_Entity_TargetInfo_Init"
 		// 	}
 		// }
-	]
+	],
+
+	"Dependencies": {
+		"HAS_TITAN_FRAMEWORK": "Peepee.TitanFramework"
+	}
 }
