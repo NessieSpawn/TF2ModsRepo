@@ -1,0 +1,6 @@
+{
+	"Name" : "Fix Client-Side Grenade Sound",
+	"Description" : "Vanilla grenade sounds are very unstable, here to fix them",
+	"Version": "1.0.0",
+	"LoadPriority": 2
+}
