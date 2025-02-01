@@ -1,0 +1,114 @@
+global function Anonymous_Entity_TargetInfo_Init
+
+void function Anonymous_Entity_TargetInfo_Init()
+{
+    AddCreateCallback( "player", OnClientPlayerCreated )
+    AddCreateCallback( "npc_titan", OnClientNPCTitanCreated )
+}
+
+void function OnClientPlayerCreated( entity player )
+{
+    thread PlayerFakeTargetInfoThink( player )
+}
+
+void function OnClientNPCTitanCreated( entity titan )
+{
+    thread TitanFakeTargetInfoThink( titan )
+}
+
+void function PlayerFakeTargetInfoThink( entity player )
+{
+    player.EndSignal( "OnDestroy" )
+
+    var rui // only one rui can be on player
+    bool pilotRUIActive = false
+    bool titanRUIActive = false
+
+    while ( true )
+    {
+        WaitFrame()
+        if ( player == GetLocalViewPlayer() || player.IsPhaseShifted() )
+        {
+            if ( rui != null )
+            {
+                RuiDestroyIfAlive( rui )
+                rui = null
+                pilotRUIActive = false
+                titanRUIActive = false
+            }
+            continue
+        }
+
+        if ( player.IsTitan() )
+        {
+            // first frame transferring to titan
+            if ( rui != null )
+            {
+                RuiDestroyIfAlive( rui )
+                rui = null
+                pilotRUIActive = false
+            }
+            
+            if ( !titanRUIActive )
+            {
+                rui = CreateCockpitRui( $"ui/targetinfo_titan.rpak", 200 )
+                titanRUIActive = true
+                RuiTrackFloat3( rui, "pos", player, RUI_TRACK_OVERHEAD_FOLLOW )
+                RuiTrackFloat( rui, "health", player, RUI_TRACK_HEALTH )
+                entity soul = player.GetTitanSoul()
+                if ( IsValid( soul ) )
+                    RuiTrackFloat( rui, "shieldHealth", soul, RUI_TRACK_SHIELD_FRACTION )
+            }
+        }
+        else // pilot player
+        {
+            // first frame transferring to pilot
+            if ( rui != null )
+            {
+                RuiDestroyIfAlive( rui )
+                rui = null
+                titanRUIActive = false
+            }
+
+            if ( !pilotRUIActive )
+            {
+                rui = CreateCockpitRui( $"ui/targetinfo_pilot.rpak" )
+                pilotRUIActive = true
+                RuiTrackFloat3( rui, "pos", player, RUI_TRACK_OVERHEAD_FOLLOW )
+                RuiTrackFloat( rui, "health", player, RUI_TRACK_HEALTH )
+            }
+        }
+    }
+}
+
+void function TitanFakeTargetInfoThink( entity titan )
+{
+    titan.EndSignal( "OnDestroy" )
+
+    var rui
+
+    while ( true )
+    {
+        WaitFrame()
+
+        if ( titan.IsPhaseShifted() )
+        {
+            if ( rui != null )
+            {
+                RuiDestroyIfAlive( rui )
+                rui = null
+            }
+            continue
+        }
+
+        if ( rui == null )
+        {
+            rui = CreateCockpitRui( $"ui/targetinfo_titan.rpak", 200 )
+            RuiTrackFloat3( rui, "pos", titan, RUI_TRACK_OVERHEAD_FOLLOW )
+            RuiTrackFloat( rui, "health", titan, RUI_TRACK_HEALTH )
+            entity soul = titan.GetTitanSoul()
+            if ( IsValid( soul ) )
+                RuiTrackFloat( rui, "shieldHealth", soul, RUI_TRACK_SHIELD_FRACTION )
+        }
+    }
+}

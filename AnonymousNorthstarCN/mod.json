@@ -1,0 +1,28 @@
+{
+	"Name" : "Anonymous Mode",
+	"Description" : "Hides everything that is evil to us",
+	"Version": "1.0.0",
+	"LoadPriority": 8,		// needs to overwrite titan framework
+
+	"Scripts": [
+		{
+			"Path": "/anonymous/anonymous_mode.gnut",
+			"RunOn": "( CLIENT && MP ) || UI",
+			"ClientCallback": {
+				"After": "AnonymousMode_Init"
+			}
+		},
+		// doesn't seem to work well with scripted rui...
+		// {
+		// 	"Path": "/anonymous/anonymous_target_info.gnut",
+		// 	"RunOn": "CLIENT && MP",
+		// 	"ClientCallback": {
+		// 		"After": "Anonymous_Entity_TargetInfo_Init"
+		// 	}
+		// }
+	],
+
+	"Dependencies": {
+		"HAS_TITAN_FRAMEWORK": "Peepee.TitanFramework"
+	}
+}

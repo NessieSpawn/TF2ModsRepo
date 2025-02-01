@@ -1,0 +1,16 @@
+"titan_base"
+{
+	"global"
+	{
+		// modified for anonymous mode
+	    //ui_targetinfo		"ui/targetinfo_titan"
+		//ui_targetinfo		"ui/targetinfo_titan_sp"
+		//ui_targetinfo		"ui/targetinfo_reaper_bounty"
+		//ui_targetinfo		"ui/targetinfo_megaturret_fw"	[$mp]
+		//ui_targetinfo		"ui/targetinfo_titan"	[$sp]
+
+		ui_targetinfo		"ui/targetinfo_megaturret_fw"
+		ui_targetinfo_offset_z		160
+	}
+}
+
