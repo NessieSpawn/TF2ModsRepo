@@ -1110,7 +1110,7 @@ void function SetUIPlayerCreditsInfo( var infoElement, int credits, int xp, int 
 {
 	var rui = Hud_GetRui( infoElement )
 	RuiSetInt( rui, "credits", credits )
-	// modified for anonymous mode
+	// modified for anonymous mod: remove player name display
 	//RuiSetString( rui, "nameText", GetPlayerName() )
 	RuiSetString( rui, "nameText", ANONYMOUS_DEFAULT_NAME )
 
@@ -1145,7 +1145,9 @@ void function SetUIPlayerCreditsInfo( var infoElement, int credits, int xp, int 
 
 	CallsignIcon callsignIcon = PlayerCallsignIcon_GetActive( GetLocalClientPlayer() )
 
-	RuiSetImage( rui, "callsignIcon", callsignIcon.image )
+	// modified for anonymous mod: remove player callsign
+	//RuiSetImage( rui, "callsignIcon", callsignIcon.image )
+	RuiSetImage( rui, "callsignIcon", $"rui/gencard_icons/gc_icon_blank" )
 }
 
 void function BigPlayButton1_Activate( var button )

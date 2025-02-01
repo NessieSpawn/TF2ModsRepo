@@ -5,9 +5,6 @@ global function Menu_CreateTeamTitanSelectionScreen
 global function LTS_CreateTeamTitanSelectionScreen
 global function DestroyTeamTitanSelectionScreen
 global function ServerCallback_UpdateTeamTitanSelection
-#if HAS_TITAN_FRAMEWORK
-	global function ServerCallback_UpdateTeamTitanSelectionString
-#endif
 global function TTS_UpdateLocalPlayerTitan
 
 global function ShowTTSPanel
@@ -164,11 +161,7 @@ void function CreateTTSRui( bool showOverMenu, bool showScore = true )
 
 			RuiSetBool( rui, "showOverMenu", showOverMenu )
 			RuiSetString( rui, "playerName", memberInfo.playerName )
-			#if HAS_TITAN_FRAMEWORK
-				RuiSetString( rui, "titanName", GetLocalizedTitanName( memberInfo.titanName.toupper() ) )
-			#else
-				RuiSetString( rui, "titanName", GetLocalizedTitanName( memberInfo.titanName ) )
-			#endif
+			RuiSetString( rui, "titanName", GetLocalizedTitanName( memberInfo.titanName ) )
 			RuiSetImage( rui, "kitImage", memberInfo.kitImage )
 			RuiSetImage( rui, "kit2Image", memberInfo.kit2Image )
 			RuiSetImage( rui, "titanImage", GetTitanImageFromName( memberInfo.titanName ) )
@@ -220,14 +213,8 @@ asset function GetTitanImageFromName( string name )
 			return $"rui/menu/postgame/vanguard_icon"
 
 		default:
-			#if HAS_TITAN_FRAMEWORK
-				if(shouldPrintDevStuff())	
-					printt( "Warning, titan is not supported for Team Selection Display a"+name )
-				return GetItemImage(name)
-			#else	
-				printt( "Warning, titan is not supported for Team Selection Display" )
-				return $"rui/hud/titanImages/placeholder_ronin"
-			#endif
+			printt( "Warning, titan is not supported for Team Selection Display" )
+			return $"rui/hud/titanImages/placeholder_ronin"
 	}
 	unreachable
 }
@@ -258,84 +245,12 @@ string function GetLocalizedTitanName( string name )
 			return Localize( "#TITAN_VANGUARD" )
 
 		default:
-			#if HAS_TITAN_FRAMEWORK
-				if(shouldPrintDevStuff())	
-					printt( "Warning, titan is not supported for Team Selection Display b`"+name )
-				return Localize(name)
-			#else
-				printt( "Warning, titan is not supported for Team Selection Display" )
-				return "#TITAN_ION"
-			#endif
+			printt( "Warning, titan is not supported for Team Selection Display" )
+			return "#TITAN_ION"
 	}
 	unreachable
 }
 
-#if HAS_TITAN_FRAMEWORK
-void function ServerCallback_UpdateTeamTitanSelection( int playerEntIndex, int suitIndex, int weaponIndex, int kitIndex, int kitIndex2 )
-{
-	//Stub, i dont want to edit the registered functions list so this is just a dummy function
-}
-void function ServerCallback_UpdateTeamTitanSelectionString( array<string> args )
-{
-	int playerEntIndex = args[0].tointeger()
-
-	entity teamMate = GetEntityFromEncodedEHandle( playerEntIndex )
-
-	string Name = args[1]
-	int weaponIndex = args[2].tointeger()
-	int kitIndex = args[3].tointeger()
-	int kitIndex2 = args[4].tointeger()
-
-	if ( !IsValid( teamMate ) )
-		return
-
-	string titanRef = Name
-
-	var dataTable = GetDataTable( $"datatable/titan_properties.rpak" )
-	//int row = GetDataTableRowMatchingStringValue( dataTable, GetDataTableColumnByName( dataTable, "titanRef" ), titanRef )
-	//string setFile = GetDataTableString( dataTable, row, GetDataTableColumnByName( dataTable, "setFile" ) )
-
-
-	string weaponRef = GetItemRefOfTypeByIndex( eItemTypes.TITAN_PRIMARY, weaponIndex )
-	string kitRef = GetItemRefOfTypeByIndex( GetModdedTitanLoadoutPassiveTypeByClass( Name, "passive1" ), kitIndex )
-	string kit2Ref = GetItemRefOfTypeByIndex( GetModdedTitanLoadoutPassiveTypeByClass( Name, "passive2" ), kitIndex2 )
-
-	if( !( teamMate in file.teamInfo ) )
-	{
-		TitanSelectionInfo info
-		file.teamInfo[teamMate] <- info
-	}
-	file.teamInfo[teamMate].player = teamMate
-	file.teamInfo[teamMate].playerName = teamMate.GetPlayerName()
-	file.teamInfo[teamMate].titanName = Name
-	file.teamInfo[teamMate].weaponImage = GetItemImage( weaponRef )
-	file.teamInfo[teamMate].kitName = GetItemName( kitRef )
-	file.teamInfo[teamMate].kitImage = GetItemImage( kitRef )
-	file.teamInfo[teamMate].kit2Name = GetItemName( kit2Ref )
-	file.teamInfo[teamMate].kit2Image = GetItemImage( kit2Ref )
-}
-
-void function TTS_UpdateLocalPlayerTitan( string setFileOrName, string weaponRef, string kitRef, string kit2Ref, bool Name = false )
-{
-	entity teamMate = GetLocalClientPlayer()
-	string titanName = setFileOrName
-	if(!Name)
-		titanName = GetTitanCharacterNameFromSetFile( setFileOrName )
-	if( !( teamMate in file.teamInfo ) )
-	{
-		TitanSelectionInfo info
-		file.teamInfo[teamMate] <- info
-	}
-	file.teamInfo[teamMate].player = teamMate
-	file.teamInfo[teamMate].playerName = teamMate.GetPlayerName()
-	file.teamInfo[teamMate].titanName = titanName
-	file.teamInfo[teamMate].weaponImage = GetItemImage( weaponRef )
-	file.teamInfo[teamMate].kitName = GetItemName( kitRef )
-	file.teamInfo[teamMate].kitImage = GetItemImage( kitRef )
-	file.teamInfo[teamMate].kit2Name = GetItemName( kit2Ref )
-	file.teamInfo[teamMate].kit2Image = GetItemImage( kit2Ref )
-}
-#else
 void function ServerCallback_UpdateTeamTitanSelection( int playerEntIndex, int suitIndex, int weaponIndex, int kitIndex, int kitIndex2 )
 {
 	entity teamMate = GetEntityFromEncodedEHandle( playerEntIndex )
@@ -374,6 +289,7 @@ void function ServerCallback_UpdateTeamTitanSelection( int playerEntIndex, int s
 void function TTS_UpdateLocalPlayerTitan( string setFile, string weaponRef, string kitRef, string kit2Ref )
 {
 	entity teamMate = GetLocalClientPlayer()
+
 	if( !( teamMate in file.teamInfo ) )
 	{
 		TitanSelectionInfo info
@@ -390,7 +306,6 @@ void function TTS_UpdateLocalPlayerTitan( string setFile, string weaponRef, stri
 	file.teamInfo[teamMate].kit2Name = GetItemName( kit2Ref )
 	file.teamInfo[teamMate].kit2Image = GetItemImage( kit2Ref )
 }
-#endif // HAS_TITAN_FRAMEWORK
 #endif
 
 #if SERVER
@@ -430,11 +345,7 @@ void function PlayerUpdateTeamTitanSelectionThink( entity player )
 			int weaponIndex = GetItemIndexOfTypeByRef( GetItemType( loadout.primary ), loadout.primary )
 			int kitIndex = GetItemIndexOfTypeByRef( GetItemType( loadout.passive1 ), loadout.passive1 )
 			int kitIndex2 = GetItemIndexOfTypeByRef( GetItemType( loadout.passive2 ), loadout.passive2 )
-			#if HAS_TITAN_FRAMEWORK
-				ServerToClientStringCommand( player, "UpdateTeamTitanSelectionString" + " " + entityHandle + " " + loadout.titanClass + " " + weaponIndex + " " + kitIndex + " " + kitIndex2 )
-			#else
-				Remote_CallFunction_NonReplay( player, "ServerCallback_UpdateTeamTitanSelection", entityHandle, suitIndex, weaponIndex, kitIndex, kitIndex2 )
-			#endif
+			Remote_CallFunction_NonReplay( player, "ServerCallback_UpdateTeamTitanSelection", entityHandle, suitIndex, weaponIndex, kitIndex, kitIndex2 )
 		}
 
 		wait 0.1

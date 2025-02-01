@@ -2,9 +2,9 @@
 // Model tracking and save/Clear functions are temp. We already update the client knowledge of loadouts. Derive from that.
 // Move the struct off the player?
 
-//#if CLIENT && MP
+#if CLIENT && MP
 	untyped
-//#endif //client && MP
+#endif //client && MP
 
 #if CLIENT
 	const float CARD_TAG_SCALE = 0.0 // update to match same const in hud_defs.rui
@@ -120,8 +120,6 @@
 
 		table< string, table<string, table<int,string> > > pilotAnims
 		table< string, table<string, string> > titanAnims
-		// from titanframework. structs cannot use #if
-		table< string, string > waitingMaps
 
 		int menuColorCorrection = -1
 	} file
@@ -131,18 +129,10 @@
 #endif //CLIENT
 
 #if CLIENT && MP
-	#if HAS_TITAN_FRAMEWORK
-		global function MapCustomTitanToDefaultTitan
-		global function MapCustomTitansToDefaultTitan
-	#endif
-
 	global function SetPresentationType
 
 	global function UpdatePilotModel
 	global function UpdateTitanModel
-	#if HAS_TITAN_FRAMEWORK
-		global function UpdateTitanModelFrameworkLoadout
-	#endif
 	global function UpdateFactionModel
 	global function UpdateBoostModel
 	global function UpdateStoreBackground
@@ -160,9 +150,6 @@
 	global function ClearEditingTitanLoadoutIndex
 
 	global function PreviewPilotCharacter
-	#if HAS_TITAN_FRAMEWORK
-		global function InheritPilotMenuAnims
-	#endif
 	global function SavePilotCharacterPreview
 	global function PreviewPilotWeapon
 	global function SavePilotWeaponPreview
@@ -220,9 +207,13 @@
 #endif // CLIENT && MP
 
 #if UI
+	const MOUSE_ROTATE_MULTIPLIER = 25.0
+
 	global function UpdateUIMapSupportsMenuModels
 	global function RunMenuClientFunction
 	global function UI_SetPresentationType
+
+	global function UICodeCallback_MouseMovementCapture
 #endif // UI
 
 	global const STORE_BG_DEFAULT = 0
@@ -638,13 +629,6 @@
 			loadoutIndex = clGlobal.editingTitanLoadoutIndex
 		else
 			loadoutIndex = GetPersistentSpawnLoadoutIndex( player, "titan" )
-		#if HAS_TITAN_FRAMEWORK
-			//if(frameworkHelperValues.usingCustomTitanLoadoutsMenu)
-			//	UpdateTitanModelFrameworkLoadout( player, GetCurrentModdedPersistentTitanLoadoutIndex())
-			//else
-			if(PlayerHasModdedTitanLoadout())
-				loadoutIndex = GetModdedLoadoutNameIndex( GetCurrentModdedPersistentTitanLoadoutIndex() ) + 10
-		#endif
 		UpdateTitanModel( player, loadoutIndex )
 	}
 
@@ -923,11 +907,7 @@
 		file.titanAnims[ animType ][ "titan_stryder_northstar_prime" ]		<- "titan_light_menu_main_idle_01"
 		file.titanAnims[ animType ][ "titan_stryder_ronin_prime" ]			<- "titan_light_menu_main_idle_01"
 		file.titanAnims[ animType ][ "titan_atlas_tracker" ]				<- "titan_medium_menu_main_idle_01_TONE"
-		#if HAS_TITAN_FRAMEWORK
-			file.titanAnims[ animType ][ "titan_atlas_vanguard" ]				<- "titan_medium_menu_main_idle_01"
-		#else
-			file.titanAnims[ animType ][ "titan_atlas_vanguard" ]				<- "titan_medium_menu_main_idle_01_MONARCH"
-		#endif
+		file.titanAnims[ animType ][ "titan_atlas_vanguard" ]				<- "titan_medium_menu_main_idle_01_MONARCH"
 		file.titanAnims[ animType ][ "titan_atlas_stickybomb" ]				<- "titan_medium_menu_main_idle_01"
 		file.titanAnims[ animType ][ "titan_atlas_ion_prime" ]				<- "titan_medium_menu_main_idle_01"
 		file.titanAnims[ animType ][ "titan_atlas_tone_prime" ]				<- "titan_medium_menu_main_idle_01_TONE"
@@ -1008,37 +988,8 @@
 		file.titanAnims[ animType ][ "titan_ogre_legion_prime" ]			<- "titan_heavy_menu_FD_idle_LEGION"
 		file.titanAnims[ animType ][ "titan_stryder_arc" ]					<- "titan_light_menu_FD_idle_RONIN"
 		file.titanAnims[ animType ][ "titan_ogre_fighter" ]					<- "titan_heavy_menu_FD_idle_SCORCH"
-		#if HAS_TITAN_FRAMEWORK
-			MapCustomTitansToDefaultTitan()
-			MapCustomPilotsToDefaultPilot()
-		#endif
 	}
-#if HAS_TITAN_FRAMEWORK
-	void function MapCustomTitansToDefaultTitan()
-	{
-		foreach(string setFile, string defaultSetFile in GetModdedTitansSetFileForAnims())
-		{
-			foreach(string key, table<string, string> anim in file.titanAnims)
-			{
-				file.titanAnims[key][setFile] <- file.titanAnims[key][defaultSetFile]
-			}
-		}
-	}
-	void function MapCustomPilotsToDefaultPilot()
-	{
-		foreach(string inheritor, string inheritFrom in file.waitingMaps)
-		{
-			InheritPilotMenuAnims(inheritFrom, inheritor)	
-		}
-	}
-	void function MapCustomTitanToDefaultTitan(string setFile, string defaultSetFile)
-	{
-		foreach(string key, table<string, string> anim in file.titanAnims)
-		{
-			file.titanAnims[key][setFile] <- file.titanAnims[key][defaultSetFile]
-		}
-	}
-#endif
+
 	string function GetPilotAnimType()
 	{
 		return file.presentationData[ file.presentationType ].pilotAnimType
@@ -1057,25 +1008,6 @@
 
 		return file.pilotAnims[ animType ][ bodyType ][ menuAnimClass ]
 	}
-#if HAS_TITAN_FRAMEWORK
-	void function InheritPilotMenuAnims(string inheritFrom, string inheritor)
-	{
-		//inheritFrom is the pilot body type that we are inheriting from
-		//inheritor is the pilot body type that we are inheriting to
-		if( file.pilotAnims.len() == 0 )
-		{
-			file.waitingMaps[ inheritor ] <- inheritFrom
-		}
-		foreach( table<string, table<int, string> > animType in file.pilotAnims )
-		{
-			animType[inheritor] <- {}
-			foreach( int key, string value in animType[ inheritFrom ] )
-			{
-				animType[inheritor][key] <- value
-			}
-		}
-	}
-#endif
 
 	string function GetMenuTitanAnim( string anim, string setFile )
 	{
@@ -1140,9 +1072,7 @@
 		//thread DrawOrg( file.menuWeaponModel.mover )
 
 		WaitSignal( level, "CachedLoadoutsReady" )
-		#if HAS_TITAN_FRAMEWORK
-			// /WaitSignal( level, "FrameworkLoadoutsReady ")
-		#endif
+
 		CreatePilotModel( player, file.menuPilot.mover )
 		CreateTitanModel( player, file.menuTitan.mover )
 		CreateFactionModel( player, file.menuFaction.mover )
@@ -1370,10 +1300,6 @@
 		int team = player.GetTeam()
 		int loadoutIndex = GetPersistentSpawnLoadoutIndex( player, "titan" )
 		string setFile = GetTitanLoadoutSetFile( loadoutIndex )
-		#if HAS_TITAN_FRAMEWORK
-			if(PlayerHasModdedTitanLoadout())
-				setFile = GetCurrentModdedTitanLoadoutDef().setFile
-		#endif
 		asset chassisModel = GetSetFileModel( setFile )
 
 		vector refOrigin = mover.GetOrigin()
@@ -1545,14 +1471,8 @@
 			return
 
 		entity player = GetLocalClientPlayer()
-		#if HAS_TITAN_FRAMEWORK
-			//if( frameworkLoadout == "")
-			UpdateTitanModel( player, loadoutIndex, flags )
-			//else
-			//	UpdateTitanModelFrameworkLoadout( player, frameworkLoadout, flags)
-		#else
-			UpdateTitanModel( player, loadoutIndex, flags )
-		#endif
+
+		UpdateTitanModel( player, loadoutIndex, flags )
 	}
 
 	void function UpdateTitanModel( entity player, int loadoutIndex, int flags = 0 )
@@ -1580,48 +1500,8 @@
 		else
 			setFile = GetTitanLoadoutSetFile( loadoutIndex )
 
-		#if HAS_TITAN_FRAMEWORK
-			string weapon
-			bool isModded = GetModdedTitanClasses().contains(cachedLoadout.titanClass)
-			bool titanDoesExist = IsBaseTitan(cachedLoadout.titanClass) || isModded
-			if(titanDoesExist)
-				weapon = GetTitanLoadoutPrimary( loadoutIndex )
-			if(!titanDoesExist || weapon == "" || !ItemDefined(weapon))
-				weapon = "mp_titanweapon_xo16_shorty"
-			asset chassisModel = GetSetFileModel( setFile )
-			
-			if(isModded)
-			{
-				ModdedTitanData data = GetModdedTitanData(cachedLoadout.titanClass)
-				if(data.altChassisType == frameworkAltChassisMethod.ALT_TITAN)
-				{
-					foreach(FrameworkChassisStruct altChassis in data.altChassisArray)
-					{
-						if(altChassis.setFile == setFile)
-						{
-							if(altChassis.modelOverride != $"")
-								chassisModel = altChassis.modelOverride
-							break
-						}
-					}
-				}
-				else
-				{
-					if(cachedLoadout.isPrime == "titan_is_prime")
-					{
-						if(data.modelPrimeOverride != $"")
-							chassisModel = data.modelPrimeOverride
-					}
-					else if(data.modelBaseOverride != $"")
-					{
-						chassisModel = data.modelBaseOverride
-					}
-				}
-			}
-		#else
-			string weapon = GetTitanLoadoutPrimary( loadoutIndex )
-			asset chassisModel = GetSetFileModel( setFile )
-		#endif
+		string weapon = GetTitanLoadoutPrimary( loadoutIndex )
+		asset chassisModel = GetSetFileModel( setFile )
 		asset weaponModel = GetWeaponModel( weapon )
 		string idleAnim = GetMenuTitanAnim( GetTitanAnimType(), setFile )
 		int camoIndex
@@ -1657,81 +1537,6 @@
 
 		UpdateTitanModelDisplay( player )
 	}
-#if HAS_TITAN_FRAMEWORK
-	void function UpdateTitanModelFrameworkLoadout( entity player, string loadoutIndex, int flags = 0 )
-	{
-
-		if ( !clGlobal.initializedMenuModels ) // Handle early calls that UI script can trigger before client is ready
-			return
-
-		if ( loadoutIndex == "" )
-		{
-			file.menuTitan.body.Hide()
-			file.menuTitan.weapon.Hide()
-
-			return
-		}
-
-
-		file.menuTitan.body.Show()
-		file.menuTitan.weapon.Show()
-
-		frameworkPersistentTitanLoadout loadout = clientframeworkPersistentTitanLoadouts.loadouts[ loadoutIndex ]
-		TitanLoadoutDef cachedLoadout = loadout.loadout
-
-		TitanLoadoutDef baseTitan = clone cachedLoadout
-		if(GetModdedTitanClasses().contains(baseTitan.titanClass))
-			baseTitan.titanClass = GetModdedTitanClassForMods(baseTitan.titanClass)
-
-			
-		string setFile
-		if ( flags & TITANMENU_FORCE_NON_PRIME )
-			setFile = GetSetFileForTitanClassAndPrimeStatus( baseTitan.titanClass, false )
-		else if ( flags & TITANMENU_FORCE_PRIME )
-			setFile = GetSetFileForTitanClassAndPrimeStatus( baseTitan.titanClass, true )
-		else
-			setFile = GetSetFileForTitanClassAndPrimeStatus( cachedLoadout.titanClass, (cachedLoadout.isPrime == "titan_is_prime"))
-
-		string weapon = GetFrameworkLoadoutValue( loadout, "primary" )
-		asset chassisModel = GetSetFileModel( setFile )
-		asset weaponModel = GetWeaponModel( weapon )
-		string idleAnim = GetMenuTitanAnim( GetTitanAnimType(), setFile )
-		int camoIndex
-		int skinIndex
-		int decalIndex
-		int weaponCamoIndex
-		int showArmBadge
-
-		if ( !( flags & TITANMENU_NO_CUSTOMIZATION ) )
-		{
-			camoIndex = GetTitanCamoIndexFromLoadoutAndPrimeStatus( cachedLoadout )
-			skinIndex = GetTitanSkinIndexFromLoadoutAndPrimeStatus( cachedLoadout )
-			decalIndex = GetTitanDecalIndexFromLoadoutAndPrimeStatus( cachedLoadout )
-			weaponCamoIndex = cachedLoadout.primaryCamoIndex
-			showArmBadge = cachedLoadout.showArmBadge
-		}
-
-		clGlobal.currentMenuTitanModels.isPrime = Dev_GetPlayerSettingByKeyField_Global( setFile, "isPrime" ) == 1
-		//clGlobal.currentMenuTitanModels.loadoutIndex = loadoutIndex
-		clGlobal.currentMenuTitanModels.bodyModel = chassisModel
-		clGlobal.currentMenuTitanModels.camoIndex = camoIndex
-		clGlobal.currentMenuTitanModels.skinIndex = skinIndex
-		clGlobal.currentMenuTitanModels.decalIndex = decalIndex
-		clGlobal.currentMenuTitanModels.idleAnim = idleAnim
-
-		clGlobal.currentMenuTitanModels.weaponModel = weaponModel
-		clGlobal.currentMenuTitanModels.weaponCamoIndex = weaponCamoIndex
-
-
-		
-		asset armBadgeModel = GetTitanArmBadgeFromLoadoutAndPrimeStatus( baseTitan )
-		
-		clGlobal.currentMenuTitanModels.armBadgeModel = armBadgeModel
-		clGlobal.currentMenuTitanModels.armBadgeBodyGroupIndex = armBadgeModel != $"" ? 0 : 0
-		clGlobal.currentMenuTitanModels.showArmBadge = showArmBadge
-		UpdateTitanModelDisplay( player )
-	}
-#endif
 
 	void function UpdatePilotModelDisplay( entity player )
 	{
@@ -1784,16 +1589,9 @@
 		file.menuPilot.weapon.SetSkin( WEAPON_SKIN_INDEX_DEFAULT ) // Lame that we need this, but this avoids invalid skin errors when the model changes and the currently shown skin index doesn't exist for the new model
 		file.menuPilot.weapon.SetModel( weaponModel )
 
-		#if HAS_TITAN_FRAMEWORK
-			bool isPreviewingWeaponNotMatchingCurrent = clGlobal.previewMenuPilotModels.weaponModel != $"" && clGlobal.previewMenuPilotModels.weapon != clGlobal.currentMenuPilotModels.weapon
-		#else
-			bool isPreviewingWeaponNotMatchingCurrent = clGlobal.previewMenuPilotModels.weaponModel != $"" && clGlobal.previewMenuPilotModels.weaponModel != clGlobal.currentMenuPilotModels.weaponModel
-		#endif
+		bool isPreviewingWeaponNotMatchingCurrent = clGlobal.previewMenuPilotModels.weaponModel != $"" && clGlobal.previewMenuPilotModels.weaponModel != clGlobal.currentMenuPilotModels.weaponModel
 
 		array<string> mods = clGlobal.previewMenuPilotModels.mods
-		#if HAS_TITAN_FRAMEWORK
-			print("mods.len(): " + mods.len())
-		#endif
 		if ( mods.len() == 0 )
 		{
 			// Don't show mods if previewing a weapon that isn't already equipped
@@ -1802,23 +1600,8 @@
 			else
 				mods = clGlobal.currentMenuPilotModels.mods
 		}
-	#if HAS_TITAN_FRAMEWORK
-		foreach( string mod in mods)
-		{
-			print("mod: " + mod)
-		}
-		try
-		{
-	#endif
 		SetBodyGroupsForWeaponConfig( file.menuPilot.weapon, weapon, mods )
-	#if HAS_TITAN_FRAMEWORK
-		}
-		catch ( e )
-		{
-			print("probably bad mods or smthn, "+ file.menuPilot.weapon + e)
-			SetBodyGroupsForWeaponConfig( file.menuPilot.weapon, weapon, [] )
-		}
-	#endif
+
 		int weaponCamoIndex
 		int weaponSkinIndex
 		if ( isPreviewingWeaponNotMatchingCurrent )
@@ -2150,10 +1933,6 @@
 			return
 
 		TitanLoadoutDef loadout = clone GetCachedTitanLoadout( loadoutIndex )
-		#if HAS_TITAN_FRAMEWORK
-		if(GetModdedTitanClasses().contains(loadout.name))
-			loadout.titanClass = GetModdedTitanClassForMods(loadout.titanClass)
-		#endif
 
 		asset armBadgeModel = GetTitanArmBadgeFromLoadoutAndSkinIndex( loadout, skinIndex )
 
@@ -2391,10 +2170,6 @@
 	// TODO: Do we need to account for model strings sometimes having a skin specified by appending ":0", ":1", etc?
 	asset function GetSetFileModel( string setFile )
 	{
-		#if HAS_TITAN_FRAMEWORK
-			//if(setFile in GetModdedTitansSetFileForAnims())
-			//	setFile = GetModdedTitanSetFileForAnims(setFile)
-		#endif
 		return GetPlayerSettingsAssetForClassName( setFile, "bodymodel" )
 	}
 
@@ -2499,14 +2274,6 @@
 
 	string function GetTitanLoadoutPrimary( int loadoutIndex )
 	{
-		#if HAS_TITAN_FRAMEWORK
-			if(GetModdedTitanClasses().contains(GetCachedTitanLoadout( loadoutIndex ).name))
-			{
-				ModdedTitanData data = GetModdedTitanData(GetCachedTitanLoadout( loadoutIndex ).name)
-				if(data.Primary.scriptHandled)
-					return data.Primary.MenuModelWeaponFunc(GetCachedTitanLoadout( loadoutIndex ))
-			}
-		#endif
 		return GetCachedTitanLoadout( loadoutIndex ).primary
 	}
 
@@ -2759,16 +2526,6 @@
 
 		while ( !clGlobal.initializedMenuModels )
 			WaitFrame()
-
-		// setting menu camera while our viewentity isn't player will crash
-		// unfortunately no way to close menu if we get our viewentity set while menu is open atm
-		while ( IsValid( GetViewEntity() ) && GetViewEntity().GetClassName() == "class C_BaseEntity" )
-			WaitFrame()
-
-		#if HAS_TITAN_FRAMEWORK
-			while(clientframeworkPersistentTitanLoadouts.filesToLoad.len() || clientframeworkPersistentPilotLoadouts.filesToLoad.len() )
-				WaitFrame() //Hack, really i only need to wait for selected file to load, but this is easier
-		#endif
 
 		if ( file.presentationTypeInitialized && presentationType == file.presentationType )
 			return
@@ -3132,5 +2889,17 @@
 				)
 				RunClientScript( "UpdateMenuToHarvester" )
 		}
+	}
+
+	void function UICodeCallback_MouseMovementCapture( var capturePanel, int deltaX, int deltaY )
+	{
+		float screenScaleXModifier = 1920.0 / GetScreenSize()[0] // 1920 is base screen width
+		float mouseXRotateDelta = deltaX * screenScaleXModifier * MOUSE_ROTATE_MULTIPLIER
+		//printt( "deltaX:", deltaX, "screenScaleModifier:", screenScaleModifier, "mouseRotateDelta:", mouseRotateDelta )
+
+		float screenScaleYModifier = 1080.0 / GetScreenSize()[1] // 1920 is base screen width
+		float mouseYRotationDelta = deltaY * screenScaleYModifier * MOUSE_ROTATE_MULTIPLIER
+
+		RunMenuClientFunction( "UpdateMouseRotateDelta", mouseXRotateDelta, mouseYRotationDelta )
 	}
 #endif // UI
