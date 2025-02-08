@@ -64,8 +64,8 @@ void function InitMainMenuPanel()
 	int headerIndex = 0
 	int buttonIndex = 0
 	// remove all sp buttons
-	/*
-	var campaignHeader = AddComboButtonHeader( comboStruct, headerIndex, "#GAMEMODE_SOLO" )
+	//var campaignHeader = AddComboButtonHeader( comboStruct, headerIndex, "#GAMEMODE_SOLO" )
+	var campaignHeader = AddComboButtonHeader( comboStruct, headerIndex, "CAMPAIGN REMOVED" )
 	file.spButtons.append( AddComboButton( comboStruct, headerIndex, buttonIndex, "" ) )
 	file.spButtonFuncs.append( DoNothing() )
 	Hud_AddEventHandler( file.spButtons[buttonIndex], UIE_CLICK, RunSPButton0 )
@@ -79,10 +79,8 @@ void function InitMainMenuPanel()
 	Hud_AddEventHandler( file.spButtons[buttonIndex], UIE_CLICK, RunSPButton2 )
 	buttonIndex++
 	UpdateSPButtons()
-	*/
 
-	// don't increase handler index
-	//headerIndex++
+	headerIndex++
 	buttonIndex = 0
 	var multiplayerHeader = AddComboButtonHeader( comboStruct, headerIndex, "#MULTIPLAYER_ALLCAPS" )
 	// "Launch Multiplayer" button removed because we don't support vanilla yet :clueless:
@@ -111,21 +109,17 @@ void function InitMainMenuPanel()
 	var modSettingsButton = AddComboButton( comboStruct, headerIndex, buttonIndex++, "#MOD_SETTINGS" )
 	Hud_AddEventHandler( modSettingsButton, UIE_CLICK, AdvanceMenuEventHandler( GetMenu( "ModSettings" ) ) )
 
-	// removed sp buttons, don't target anything for northstar
 	var spotlightLargeButton = Hud_GetChild( file.spotlightPanel, "SpotlightLarge" )
-	//spotlightLargeButton.SetNavLeft( file.spButtons[0] )
+	spotlightLargeButton.SetNavLeft( file.spButtons[0] )
 
 	var spotlightSmall0Button = Hud_GetChild( file.spotlightPanel, "SpotlightSmall0" )
-	//spotlightSmall0Button.SetNavLeft( file.spButtons[0] )
+	spotlightSmall0Button.SetNavLeft( file.spButtons[0] )
 
 	file.buttonData = []
 
-	// quit button has weird position after editing main menu panel, temp remove
-	/*
 	#if PC_PROG
 		file.buttonData.append( { name = "#QUIT", activateFunc = OnQuitButton_Activate } )
 	#endif // PC_PROG
-	*/
 
 	if ( file.buttonData.len() )
 	{
@@ -177,12 +171,11 @@ void function OnShowMainMenuPanel()
 		thread EnableCheckPlus()
 	#endif // PS4_PROG
 
-	// remove sp buttons
-	//UpdateSPButtons()
+	UpdateSPButtons()
 	// dont try and update the launch multiplayer button, because it doesn't exist
 	//thread UpdatePlayButton( file.mpButton )
 	thread UpdatePlayButton( file.fdButton )
-	//thread MonitorTrialVersionChange()
+	thread MonitorTrialVersionChange()
 
 	#if DURANGO_PROG
 		SetLabelRuiText( file.activeProfile, Durango_GetGameDisplayName() )
@@ -192,14 +185,11 @@ void function OnShowMainMenuPanel()
 	ExecCurrentGamepadButtonConfig()
 	ExecCurrentGamepadStickConfig()
 
-	// removed sp buttons, always focus mp
-	/*
+
 	string defaultButtonRowFocus = "ButtonRow0x0"
 	bool shouldFocusMultiplayer = GetMenuWasMultiplayerPlayedLast()
 	if ( shouldFocusMultiplayer )
 		defaultButtonRowFocus = "ButtonRow1x0"
-	*/
-	string defaultButtonRowFocus = "ButtonRow1x0"
 
 	SetPanelDefaultFocus( file.panel, Hud_GetChild( file.panel, defaultButtonRowFocus ) )
 	PanelFocusDefault( file.panel )
@@ -443,9 +433,9 @@ void function UpdatePlayButton( var button )
 			{
 				// restrict non-vanilla players from accessing official servers
 				bool hasNonVanillaMods = false
-				foreach ( string modName in NSGetModNames() )
+				foreach ( ModInfo mod in NSGetModsInformation() )
 				{
-					if ( NSIsModEnabled( modName ) && NSIsModRequiredOnClient( modName ) )
+					if ( mod.enabled && mod.requiredOnClient )
 					{
 						hasNonVanillaMods = true
 						break
@@ -695,6 +685,8 @@ void function UpdateSPButtons()
 	}
 	else
 	{
+		// change button to do nothing
+		/*
 		if ( HasValidSaveGame() )
 		{
 			AddSPButton( buttonIndex, LaunchSPContinue, "#MENU_CONTINUE_GAME" )
@@ -708,6 +700,8 @@ void function UpdateSPButtons()
 		}
 
 		AddSPButton( buttonIndex, LaunchSPNew, "#MENU_NEW_GAME" )
+		*/
+		AddSPButton( buttonIndex, DoNothing, "CAMPAIGN NOT AVAILABLE" )
 	}
 }
 
