@@ -12,7 +12,7 @@
 	"ConVars": [
 		{
 			"Name": "randomize_pilot_loadout",
-			"DefaultValue": "1"
+			"DefaultValue": "0"
 		},
 		{
 			"Name": "randomize_titan_loadout",
@@ -24,11 +24,11 @@
 		},
 		{
 			"Name": "randomize_pilot_camo",
-			"DefaultValue": "1"
+			"DefaultValue": "0"
 		},
 		{
 			"Name": "randomize_titan_camo",
-			"DefaultValue": "1"
+			"DefaultValue": "0"
 		}
 	],
 
