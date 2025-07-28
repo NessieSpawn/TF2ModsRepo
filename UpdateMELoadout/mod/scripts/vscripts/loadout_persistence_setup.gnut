@@ -369,7 +369,7 @@ void function LoadoutPersistenceVariales_Threaded()
 	player.ClientCommand( "SetPersistentLoadoutValue pilot 8 primaryMod1 extended_ammo" )
 	player.ClientCommand( "SetPersistentLoadoutValue pilot 8 primaryMod2 pas_fast_swap" )
 	// swap before we do anything to secondary/backup weapons
-	player.ClientCommand( "SwapSecondaryAndWeapon3PersistentLoadoutData 2" )
+	player.ClientCommand( "SwapSecondaryAndWeapon3PersistentLoadoutData 8" )
 	player.ClientCommand( "SetPersistentLoadoutValue pilot 8 secondary mp_weapon_semipistol" )
 	player.ClientCommand( "SetPersistentLoadoutValue pilot 8 secondaryMod1 extended_ammo" )
 	player.ClientCommand( "SetPersistentLoadoutValue pilot 8 secondaryMod2 pas_fast_ads" )
